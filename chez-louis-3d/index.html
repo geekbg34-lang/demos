@@ -1,0 +1,728 @@
+<title>Chez Louis 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --paper:#F3EFDE;
+    --paper-deep:#EAE2C7;
+    --paper-line: rgba(36,31,23,.14);
+    --ink:#241F17;
+    --ink-soft:#6B6045;
+    --amber:#C68A2E;
+    --amber-deep:#A66F1F;
+    --amber-pale:#EFD9A4;
+    --charcoal:#211C15;
+    --charcoal-deep:#171310;
+    --charcoal-line: rgba(243,239,222,.16);
+    --sage:#5B7A45;
+    --sage-pale:#DEE6C8;
+    --status-open:#7FB88A;
+    --status-closed:#D98B6C;
+    --shadow-1: 0 1px 2px rgba(33,28,21,.06), 0 8px 20px -12px rgba(33,28,21,.22);
+    --shadow-2: 0 6px 16px rgba(33,28,21,.10), 0 24px 44px -20px rgba(33,28,21,.32);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Manrope",ui-sans-serif,system-ui,sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg,canvas{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p,blockquote{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--amber-deep); outline-offset:3px; border-radius:2px; }
+
+  .container{ max-width:1180px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.25rem,6vw,5.75rem); }
+  .section-deep{ background:var(--paper-deep); }
+
+  .eyebrow{ font-size:.76rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--amber-deep); }
+  h2.section-title{
+    font-family:"Fraunces",Georgia,serif; font-weight:500; font-style:italic;
+    font-size:clamp(1.85rem,1.4rem+2vw,2.55rem); text-wrap:balance; margin-top:.4rem;
+  }
+  .lede{ max-width:60ch; font-size:1.03rem; color:var(--ink-soft); }
+
+  /* ---------- NAV (always dark, sits above the 3D hero and every section) ---------- */
+  .nav{ position:sticky; top:0; z-index:60; background:rgba(23,19,16,.82); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); transition:box-shadow .25s ease, background-color .25s ease; }
+  .nav.scrolled{ background:rgba(23,19,16,.96); box-shadow:0 1px 0 var(--charcoal-line), 0 10px 24px -18px rgba(0,0,0,.6); }
+  .nav-inner{ max-width:1180px; margin-inline:auto; padding:1.05rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Fraunces",Georgia,serif; font-weight:600; font-style:italic; font-size:1.34rem; white-space:nowrap; color:var(--paper); }
+  .brand span{ color:var(--amber); }
+  .nav-links{ display:flex; gap:1.6rem; }
+  .nav-links a{ font-size:.89rem; font-weight:600; color:rgba(243,239,222,.75); position:relative; padding-bottom:.2rem; white-space:nowrap; }
+  .nav-links a::after{ content:""; position:absolute; left:0; right:100%; bottom:0; height:1px; background:var(--amber); transition:right .22s ease; }
+  .nav-links a:hover{ color:var(--paper); }
+  .nav-links a:hover::after{ right:0; }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.78rem; font-weight:700; color:var(--paper); border:1px solid var(--charcoal-line); padding:.35rem .7rem; border-radius:999px; white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .dot.is-open{ background:var(--status-open); box-shadow:0 0 0 3px rgba(127,184,138,.25); }
+
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.68rem 1.3rem; border-radius:3px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease, border-color .15s ease; }
+  .btn-amber{ background:var(--amber); color:var(--charcoal-deep); }
+  .btn-amber:hover{ background:var(--amber-pale); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--paper-line); color:var(--ink); }
+  .btn-line:hover{ border-color:var(--amber-deep); color:var(--amber-deep); }
+  .btn-line-dark{ border:1px solid rgba(243,239,222,.4); color:var(--paper); }
+  .btn-line-dark:hover{ border-color:var(--amber); color:var(--amber); }
+  .btn-charcoal{ background:var(--charcoal); color:var(--paper); }
+  .btn-charcoal:hover{ background:#38301F; transform:translateY(-1px); }
+
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--paper); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:59; background:var(--charcoal-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Fraunces",Georgia,serif; font-size:1.7rem; font-style:italic; color:var(--paper); }
+  .mobile-menu a:hover{ color:var(--amber); }
+
+  /* ---------- HERO 3D ---------- */
+  .hero-3d{
+    position:relative; height:clamp(540px,72vh,680px);
+    background:radial-gradient(120% 100% at 78% 30%, #2a2318 0%, var(--charcoal-deep) 62%);
+    overflow:hidden;
+  }
+  .hero-3d canvas{ position:absolute; inset:0; width:100%; height:100%; }
+  .hero-scrim{
+    position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(100deg, rgba(23,19,16,.95) 0%, rgba(23,19,16,.72) 38%, rgba(23,19,16,.12) 75%);
+  }
+  .hero-3d-inner{ position:relative; z-index:2; max-width:1180px; height:100%; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); display:flex; flex-direction:column; justify-content:center; }
+  .hero-3d-inner .eyebrow{ color:var(--amber-pale); }
+  .hero-3d h1{
+    font-family:"Fraunces",Georgia,serif; font-weight:500; color:var(--paper);
+    font-size:clamp(2.35rem,1.7rem+3vw,3.85rem); line-height:1.05; text-wrap:balance; margin-top:.6rem; max-width:20ch;
+  }
+  .hero-3d h1 em{ color:var(--amber); font-style:italic; }
+  .hero-3d-lede{ margin-top:1.2rem; font-size:1.06rem; color:rgba(243,239,222,.72); max-width:36ch; }
+  .hero-3d-facts{ margin-top:1.3rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid rgba(243,239,222,.22); background:rgba(243,239,222,.06); padding:.32rem .65rem; border-radius:999px; color:rgba(243,239,222,.82); }
+  .hero-3d-actions{ margin-top:1.7rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .hero-3d-status{ margin-top:1.6rem; display:flex; align-items:center; gap:.6rem; font-size:.86rem; color:rgba(243,239,222,.68); }
+  .hero-3d-status strong{ color:var(--paper); }
+  .scroll-cue{ position:absolute; left:50%; bottom:1.6rem; transform:translateX(-50%); z-index:2; color:rgba(243,239,222,.55); font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; display:flex; flex-direction:column; align-items:center; gap:.4rem; }
+  .scroll-cue svg{ width:1rem; height:1rem; animation:bob 1.8s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
+
+  /* ---------- INFO STRIP ---------- */
+  .info-strip{ border-block:1px solid var(--paper-line); }
+  .info-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--paper-line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.35rem; height:1.35rem; color:var(--amber-deep); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.95rem; }
+  .info-item .value.small{ font-weight:600; }
+
+  /* ---------- FLIP CARDS (engagements) ---------- */
+  .flip-grid{ margin-top:2.2rem; display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; }
+  .flip-card{ perspective:1200px; height:190px; }
+  .flip-inner{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .7s cubic-bezier(.4,.15,.15,1); }
+  .flip-card:hover .flip-inner, .flip-card:focus-within .flip-inner{ transform:rotateY(180deg); }
+  .flip-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:8px; padding:1.3rem; display:flex; flex-direction:column; }
+  .flip-front{ background:var(--paper); border:1px solid var(--paper-line); }
+  .flip-front svg{ width:1.6rem; height:1.6rem; color:var(--amber-deep); }
+  .flip-front h3{ margin-top:.9rem; font-family:"Fraunces",Georgia,serif; font-weight:500; font-size:1.05rem; }
+  .flip-front .flip-hint{ margin-top:auto; font-size:.72rem; color:var(--ink-soft); font-weight:600; }
+  .flip-back{ background:var(--charcoal); color:var(--paper); transform:rotateY(180deg); justify-content:center; }
+  .flip-back p{ font-size:.86rem; color:rgba(243,239,222,.78); }
+
+  /* ---------- TRACEABILITY ---------- */
+  .trace{ margin-top:2.4rem; display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; }
+  .trace::before{ content:""; position:absolute; top:1.3rem; left:12.5%; right:12.5%; height:1px; background:repeating-linear-gradient(90deg, var(--paper-line) 0 8px, transparent 8px 14px); }
+  .trace-step{ position:relative; padding-inline:.75rem; text-align:center; }
+  .trace-num{ width:2.6rem; height:2.6rem; margin-inline:auto; border-radius:50%; background:var(--paper); border:1px solid var(--paper-line); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; }
+  .trace-num svg{ width:1.3rem; height:1.3rem; color:var(--amber-deep); }
+  .trace-title{ margin-top:.9rem; font-weight:700; font-size:.95rem; }
+  .trace-text{ margin-top:.35rem; font-size:.84rem; color:var(--ink-soft); }
+
+  /* ---------- TILT CATEGORY CARDS ---------- */
+  .category-grid{ margin-top:2rem; display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; }
+  .tilt-card{ perspective:900px; }
+  .tilt-inner{
+    background:var(--paper); border:1px solid var(--paper-line); border-radius:6px; padding:1.4rem;
+    transform-style:preserve-3d; transition:transform .12s ease-out, box-shadow .12s ease-out;
+    position:relative; overflow:hidden;
+  }
+  .tilt-inner::after{
+    content:""; position:absolute; inset:0; opacity:0; transition:opacity .12s ease-out;
+    background:radial-gradient(220px 140px at var(--gx,50%) var(--gy,0%), rgba(198,138,46,.28), transparent 65%);
+  }
+  .tilt-card:hover .tilt-inner{ box-shadow:var(--shadow-2); }
+  .tilt-card:hover .tilt-inner::after{ opacity:1; }
+  .tilt-inner svg{ width:1.6rem; height:1.6rem; color:var(--amber-deep); position:relative; }
+  .tilt-inner h3{ margin-top:.9rem; font-family:"Fraunces",Georgia,serif; font-weight:500; font-size:1.05rem; position:relative; }
+  .tilt-inner p{ margin-top:.4rem; font-size:.85rem; color:var(--ink-soft); position:relative; }
+
+  .carte-cta{ margin-top:1.8rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--charcoal); color:var(--paper); border-radius:8px; padding:1.5rem 1.8rem; }
+  .carte-cta p{ margin-top:.35rem; font-size:.88rem; color:rgba(243,239,222,.68); max-width:38ch; }
+  .carte-cta strong{ display:block; font-family:"Fraunces",Georgia,serif; font-style:italic; font-weight:500; font-size:1.2rem; color:var(--paper); }
+
+  /* ---------- COMMANDER ---------- */
+  .order-steps{ margin-top:2.2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+  .order-step{ background:var(--paper); border:1px solid var(--paper-line); border-radius:6px; padding:1.5rem; }
+  .order-step .num{ font-family:"Fraunces",Georgia,serif; font-style:italic; font-size:1.6rem; color:var(--amber-deep); }
+  .order-step svg{ width:1.6rem; height:1.6rem; color:var(--ink); margin-top:.7rem; }
+  .order-step h3{ margin-top:.8rem; font-weight:700; font-size:1rem; }
+  .order-step p{ margin-top:.4rem; font-size:.87rem; color:var(--ink-soft); }
+
+  /* ---------- AVIS ---------- */
+  .avis-card{ margin-top:2rem; background:var(--charcoal); color:var(--paper); border-radius:8px; padding:clamp(1.75rem,4vw,2.75rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:3rem; height:3rem; flex:none; }
+  .avis-text h3{ font-family:"Fraunces",Georgia,serif; font-weight:500; font-style:italic; font-size:1.5rem; }
+  .avis-text p{ margin-top:.6rem; max-width:46ch; font-size:.92rem; color:rgba(243,239,222,.68); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:34rem; }
+
+  /* ---------- NOUS TROUVER ---------- */
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border:1px solid var(--paper-line); border-radius:6px; overflow:hidden; background:var(--paper-deep); }
+  .find-address{ font-size:1.1rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.5rem; display:flex; flex-direction:column; gap:.85rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.92rem; color:var(--ink-soft); }
+  .find-list svg{ width:1.2rem; height:1.2rem; color:var(--amber-deep); flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.6rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background:var(--charcoal-deep); color:rgba(243,239,222,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid var(--charcoal-line); }
+  footer .brand{ font-size:1.35rem; color:var(--paper); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.88rem; max-width:28ch; }
+  footer h4{ font-size:.74rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--amber-pale); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.88rem; }
+  footer .foot-list a:hover{ color:var(--paper); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.76rem; color:rgba(243,239,222,.48); max-width:1180px; margin-inline:auto; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+
+  @media (max-width:1080px){
+    .nav-links{ display:none; }
+    .burger{ display:block; }
+    .nav-actions .btn-amber{ display:none; }
+    .info-grid{ grid-template-columns:repeat(2,1fr); }
+    .info-item:nth-child(2){ border-left:none; }
+    .flip-grid{ grid-template-columns:repeat(2,1fr); row-gap:1.1rem; }
+    .trace{ grid-template-columns:1fr 1fr; row-gap:2rem; }
+    .trace::before{ display:none; }
+    .category-grid{ grid-template-columns:repeat(2,1fr); }
+    .order-steps{ grid-template-columns:1fr; }
+    .avis-card{ flex-direction:column; align-items:flex-start; }
+    .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+    .hero-scrim{ background:linear-gradient(180deg, rgba(23,19,16,.55) 0%, rgba(23,19,16,.94) 62%); }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Chez <span>Louis</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#carte">La carte</a>
+      <a href="#engagements">Nos engagements</a>
+      <a href="#commander">Commander</a>
+      <a href="#avis">Avis</a>
+      <a href="#nous-trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-amber" href="tel:+33478532868">04 78 53 28 68</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#carte">La carte</a>
+  <a href="#engagements">Nos engagements</a>
+  <a href="#commander">Commander</a>
+  <a href="#avis">Avis</a>
+  <a href="#nous-trouver">Nous trouver</a>
+  <a class="btn btn-amber" href="tel:+33478532868">Appeler · 04 78 53 28 68</a>
+</div>
+
+<section class="hero-3d" id="top">
+  <canvas id="breadCanvas" aria-hidden="true"></canvas>
+  <div class="hero-scrim"></div>
+  <div class="hero-3d-inner">
+    <p class="eyebrow">Boulangerie · Pâtisserie · Sandwicherie — Villeurbanne</p>
+    <h1>Du pain bio, une carte <em>pour tout le monde.</em></h1>
+    <p class="hero-3d-lede">Route de Genas depuis 2011. Farines bio, options végétariennes, vegan et sans gluten — et ouvert sept jours sur sept.</p>
+    <div class="hero-3d-facts">
+      <span class="fact-chip">Ouvert 7j/7</span>
+      <span class="fact-chip">Ingrédients bio</span>
+      <span class="fact-chip">Options vegan &amp; sans gluten</span>
+      <span class="fact-chip">Terrasse</span>
+    </div>
+    <div class="hero-3d-actions">
+      <a class="btn btn-amber" href="#carte">Voir ce qu'on y trouve</a>
+      <a class="btn btn-line-dark" href="#commander">Commander à emporter</a>
+    </div>
+    <div class="hero-3d-status">
+      <span class="dot" id="dotHero"></span>
+      <strong id="statusHero">Horaires…</strong>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span>Découvrir</span>
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value small">65 route de Genas, 69100 Villeurbanne</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value small">04 78 53 28 68</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="19" r="1.4" fill="currentColor"/><circle cx="16" cy="19" r="1.4" fill="currentColor"/></svg>
+      <div><p class="label">Accès</p><p class="value small">Bus Cyrano, arrêt à proximité</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="engagements">
+  <div class="container">
+    <p class="eyebrow">Nos engagements</p>
+    <h2 class="section-title">Une boulangerie qui choisit ses ingrédients.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Chez Louis travaille des farines et ingrédients issus de l'agriculture biologique, dans une démarche pensée pour respecter l'environnement et le bien-être animal. Survolez une carte pour en savoir plus.</p>
+
+    <div class="flip-grid">
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 21V6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 16c-1.6-.3-2.8-1.3-3-2.8 1.6.1 2.8.9 3 2.8zM12 16c1.6-.3 2.8-1.3 3-2.8-1.6.1-2.8.9-3 2.8zM12 11c-1.6-.3-2.8-1.3-3-2.8 1.6.1 2.8.9 3 2.8zM12 11c1.6-.3 2.8-1.3 3-2.8-1.6.1-2.8.9-3 2.8z" fill="currentColor"/></svg>
+            <h3>Ingrédients bio</h3>
+            <span class="flip-hint">Survoler →</span>
+          </div>
+          <div class="flip-face flip-back">
+            <p>Farines et matières premières issues de l'agriculture biologique, pour une production plus respectueuse de l'environnement.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-9-9C1.7 7.8 3 4.5 6.3 4c2-.3 3.8.8 5.7 3 1.9-2.2 3.7-3.3 5.7-3C21 4.5 22.3 7.8 21 11c-2 4.6-9 9-9 9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            <h3>Bien-être animal</h3>
+            <span class="flip-hint">Survoler →</span>
+          </div>
+          <div class="flip-face flip-back">
+            <p>Des choix de production pensés pour le bien-être animal, du sourcing des ingrédients à la recette finale.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 19c9 1 14-4 14-14-9 0-13 5-14 14z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 18c3-4 6-7 12-11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <h3>Démarche responsable</h3>
+            <span class="flip-hint">Survoler →</span>
+          </div>
+          <div class="flip-face flip-back">
+            <p>Une production pensée pour limiter son impact environnemental, au quotidien.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19v-5h4v5" stroke="currentColor" stroke-width="1.6"/></svg>
+            <h3>Fait sur place</h3>
+            <span class="flip-hint">Survoler →</span>
+          </div>
+          <div class="flip-face flip-back">
+            <p>Tout est préparé et cuit sur place, chaque jour, du pain aux sandwichs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trace">
+      <div class="trace-step">
+        <div class="trace-num">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21V6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 16c-1.6-.3-2.8-1.3-3-2.8 1.6.1 2.8.9 3 2.8zM12 16c1.6-.3 2.8-1.3 3-2.8-1.6.1-2.8.9-3 2.8z" fill="currentColor"/></svg>
+        </div>
+        <p class="trace-title">Farine bio</p>
+        <p class="trace-text">Blé et sarrasin certifiés agriculture biologique.</p>
+      </div>
+      <div class="trace-step">
+        <div class="trace-num">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 4a8 8 0 100 16 6 6 0 100-12 4 4 0 100 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <p class="trace-title">Pétrissage &amp; pousse lente</p>
+        <p class="trace-text">Le temps de fermentation fait le goût, pas les additifs.</p>
+      </div>
+      <div class="trace-step">
+        <div class="trace-num">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3c1 3-2 4-2 7a3 3 0 106 0c1.5 1.5 2 3.3 2 5a6 6 0 11-12 0c0-4 3-4 3-8 1 1 1.5 2 1.5 3C11 8 11 5 12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <p class="trace-title">Cuisson du jour</p>
+        <p class="trace-text">Plusieurs fournées, du matin à la fin d'après-midi.</p>
+      </div>
+      <div class="trace-step">
+        <div class="trace-num">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 8a3 3 0 016 0" stroke="currentColor" stroke-width="1.6"/></svg>
+        </div>
+        <p class="trace-title">Votre boulangerie</p>
+        <p class="trace-text">Sur place, à emporter, ou en commande préparée.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="carte">
+  <div class="container">
+    <p class="eyebrow">Ce qu'on y trouve</p>
+    <h2 class="section-title">Boulangerie, pâtisserie et sandwicherie.</h2>
+    <p class="lede" style="margin-top:1.1rem;">La carte change selon les jours et les arrivages. Voici les grandes familles de produits — pour le détail et les prix du jour, un appel suffit.</p>
+
+    <div class="category-grid">
+      <div class="tilt-card">
+        <div class="tilt-inner">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M8 30 Q6 24 10 18 Q16 10 30 8 Q40 7 42 14 Q43 20 36 26 Q28 34 16 36 Q9 37 8 30Z" stroke="currentColor" stroke-width="2"/><path d="M16 16 L20 20 M22 13 L26 17 M28 11 L32 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <h3>Pains</h3>
+          <p>Farines bio, cuisson quotidienne.</p>
+        </div>
+      </div>
+      <div class="tilt-card">
+        <div class="tilt-inner">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M10 30c-2-10 6-20 18-20 8 0 14 5 16 11-6-3-13-2-17 3-3 4-3 9 0 13-9 2-15-1-17-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <h3>Viennoiseries</h3>
+          <p>Les classiques du petit-déjeuner.</p>
+        </div>
+      </div>
+      <div class="tilt-card">
+        <div class="tilt-inner">
+          <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="26" r="14" stroke="currentColor" stroke-width="2"/><path d="M10 26a14 14 0 0128 0" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/><circle cx="24" cy="17" r="1.6" fill="currentColor"/><circle cx="30" cy="20" r="1.6" fill="currentColor"/></svg>
+          <h3>Pâtisseries</h3>
+          <p>Gourmandises sucrées, dont des options vegan.</p>
+        </div>
+      </div>
+      <div class="tilt-card">
+        <div class="tilt-inner">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M8 20h32v4a4 4 0 01-4 4H12a4 4 0 01-4-4v-4z" stroke="currentColor" stroke-width="2"/><path d="M8 20c0-6 7-10 16-10s16 4 16 10" stroke="currentColor" stroke-width="2"/><path d="M10 22l4 3 4-3 4 3 4-3 4 3 4-3" stroke="currentColor" stroke-width="1.6"/></svg>
+          <h3>Sandwicherie</h3>
+          <p>Formules salées, options végétariennes et sans gluten.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="carte-cta">
+      <div>
+        <strong>La carte du jour, par téléphone.</strong>
+        <p>Produits, prix et disponibilités changent selon les jours — le plus fiable reste un appel direct au fournil.</p>
+      </div>
+      <a class="btn btn-amber" href="tel:+33478532868">Appeler · 04 78 53 28 68</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="commander">
+  <div class="container">
+    <p class="eyebrow">Commander</p>
+    <h2 class="section-title">À emporter, sans imprévu.</h2>
+    <div class="order-steps">
+      <div class="order-step">
+        <span class="num">01</span>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Appelez le fournil</h3>
+        <p>Un coup de fil au 04 78 53 28 68 pour connaître les produits disponibles.</p>
+      </div>
+      <div class="order-step">
+        <span class="num">02</span>
+        <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/><path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h3>On prépare votre commande</h3>
+        <p>Le boulanger met de côté ce dont vous avez besoin et convient d'une heure de retrait.</p>
+      </div>
+      <div class="order-step">
+        <span class="num">03</span>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 9l1-5h14l1 5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 9a2.5 2.5 0 005 0 2.5 2.5 0 005 0 2.5 2.5 0 005 0" stroke="currentColor" stroke-width="1.6"/><path d="M5 9v10h14V9" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Passez en boutique</h3>
+        <p>Récupérez et réglez sur place, 65 route de Genas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">L'avis de vrais clients, pas le nôtre.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Les avis se lisent sur Google.</h3>
+          <p>Plutôt que d'inventer des témoignages, on vous emmène directement voir les vrais avis laissés sur la fiche Google de Chez Louis — et vous pouvez y déposer le vôtre en sortant du fournil.</p>
+        </div>
+      </div>
+      <a class="btn btn-amber" href="https://www.google.com/maps/search/?api=1&query=Chez+Louis+Boulangerie+65+route+de+Genas+69100+Villeurbanne" target="_blank" rel="noopener">Voir les avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="nous-trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Sur la route de Genas.</h2>
+      <p class="find-address">65 route de Genas, 69100 Villeurbanne</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 12h16" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="19" r="1.4" fill="currentColor"/><circle cx="16" cy="19" r="1.4" fill="currentColor"/></svg>
+          <span>Accessible en bus, ligne Cyrano, arrêt à proximité immédiate.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="currentColor"/><path d="M11 8v4l-4 3M11 12h5l3 4M11 12l1 5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="18" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg>
+          <span>Boutique accessible PMR.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 11a9 9 0 0118 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 11v9M9 20h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span>Petite terrasse pour manger sur place.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-charcoal" href="https://www.google.com/maps/search/?api=1&query=Chez+Louis+Boulangerie+65+route+de+Genas+69100+Villeurbanne" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33478532868">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M170 46c-16 0-28 12-28 28 0 21 28 52 28 52s28-31 28-52c0-16-12-28-28-28z" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.4"/>
+        <circle cx="170" cy="74" r="8" fill="var(--paper)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Chez <span>Louis</span></a>
+      <p class="foot-tagline">Boulangerie, pâtisserie et sandwicherie bio à Villeurbanne, ouverte 7 jours sur 7 depuis 2011.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33478532868">04 78 53 28 68</a>
+        <span>65 route de Genas, 69100 Villeurbanne</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Tous les jours&nbsp; 6h30 – 20h30</span>
+        <span>Ouvert 7j/7</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Chez Louis</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:{open:'06:30', close:'20:30'}, 1:{open:'06:30', close:'20:30'}, 2:{open:'06:30', close:'20:30'},
+    3:{open:'06:30', close:'20:30'}, 4:{open:'06:30', close:'20:30'}, 5:{open:'06:30', close:'20:30'}, 6:{open:'06:30', close:'20:30'}
+  };
+  var dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    if(today){
+      var openMin = toMinutes(today.open), closeMin = toMinutes(today.close);
+      if(minutes >= openMin && minutes < closeMin){
+        return { open:true, text:'Ouvert — ferme à ' + fmt(today.close) };
+      }
+    }
+    for(var i=0;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      if(!sched) continue;
+      if(i===0){
+        var oMin = toMinutes(sched.open);
+        if(minutes < oMin){ return { open:false, text:'Fermé — ouvre à ' + fmt(sched.open) }; }
+        continue;
+      }
+      var label = i===1 ? 'demain' : dayNames[d];
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(sched.open) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+
+  function applyStatus(){
+    var status = getStatus(new Date());
+    ['dotNav','dotHero'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.toggle('is-open', status.open);
+    });
+    ['statusNav','statusHero','infoHours'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = status.text;
+    });
+  }
+  applyStatus();
+  setInterval(applyStatus, 60000);
+
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  /* tilt cards */
+  document.querySelectorAll('.tilt-card').forEach(function(card){
+    var inner = card.querySelector('.tilt-inner');
+    card.addEventListener('mousemove', function(e){
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      var rx = (0.5 - py) * 14;
+      var ry = (px - 0.5) * 14;
+      inner.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateZ(4px)';
+      inner.style.setProperty('--gx', (px*100) + '%');
+      inner.style.setProperty('--gy', (py*100) + '%');
+    });
+    card.addEventListener('mouseleave', function(){
+      inner.style.transform = 'rotateX(0) rotateY(0) translateZ(0)';
+    });
+  });
+
+  /* ---------- 3D hero ---------- */
+  var canvas = document.getElementById('breadCanvas');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(canvas && window.THREE){
+    try{
+      var heroEl = canvas.parentElement;
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(38, heroEl.clientWidth / heroEl.clientHeight, 0.1, 100);
+      camera.position.set(0, 0, 9);
+
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(heroEl.clientWidth, heroEl.clientHeight, false);
+
+      var group = new THREE.Group();
+      group.position.x = 1.6;
+      scene.add(group);
+
+      var R = 2.1, r = 0.78;
+      var ringGeo = new THREE.TorusGeometry(R, r, 28, 90);
+      var ringMat = new THREE.MeshStandardMaterial({ color: 0xC68A2E, roughness: 0.8, metalness: 0.04 });
+      var ring = new THREE.Mesh(ringGeo, ringMat);
+      group.add(ring);
+
+      var seedGeo = new THREE.IcosahedronGeometry(0.085, 0);
+      var seedMat = new THREE.MeshStandardMaterial({ color: 0xF3EFDE, roughness: 0.55 });
+      for(var i = 0; i < 46; i++){
+        var seed = new THREE.Mesh(seedGeo, seedMat);
+        var u = Math.random() * Math.PI * 2;
+        var v = Math.random() * Math.PI * 2;
+        seed.position.set(
+          (R + r * Math.cos(v)) * Math.cos(u),
+          (R + r * Math.cos(v)) * Math.sin(u),
+          r * Math.sin(v)
+        );
+        seed.lookAt(0, 0, 0);
+        group.add(seed);
+      }
+
+      var dustCount = 220;
+      var dustGeo = new THREE.BufferGeometry();
+      var positions = new Float32Array(dustCount * 3);
+      for(var j = 0; j < dustCount; j++){
+        positions[j*3] = (Math.random() - 0.5) * 16;
+        positions[j*3 + 1] = (Math.random() - 0.5) * 10;
+        positions[j*3 + 2] = (Math.random() - 0.5) * 6 - 1;
+      }
+      dustGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      var dustMat = new THREE.PointsMaterial({ color: 0xEFD9A4, size: 0.03, transparent: true, opacity: 0.5 });
+      var dust = new THREE.Points(dustGeo, dustMat);
+      scene.add(dust);
+
+      scene.add(new THREE.AmbientLight(0x3a3226, 1.4));
+      var key = new THREE.PointLight(0xE4B45A, 55, 30);
+      key.position.set(6, 5, 7);
+      scene.add(key);
+      var rim = new THREE.PointLight(0x6f7ea8, 20, 30);
+      rim.position.set(-7, -3, -4);
+      scene.add(rim);
+
+      var pointer = { x: 0, y: 0 };
+      window.addEventListener('pointermove', function(e){
+        pointer.x = (e.clientX / window.innerWidth - 0.5);
+        pointer.y = (e.clientY / window.innerHeight - 0.5);
+      }, { passive: true });
+
+      function onResize(){
+        var w = heroEl.clientWidth, h = heroEl.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+      }
+      window.addEventListener('resize', onResize);
+
+      var clock = new THREE.Clock();
+      function animate(){
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+        if(!reduceMotion){
+          group.rotation.y = t * 0.22;
+          group.rotation.x = Math.sin(t * 0.5) * 0.1;
+          dust.rotation.y = t * 0.015;
+          camera.position.x += ((pointer.x * 1.4) - camera.position.x) * 0.03;
+          camera.position.y += ((-pointer.y * 0.9) - camera.position.y) * 0.03;
+          camera.lookAt(0, 0, 0);
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    } catch(err){
+      canvas.style.display = 'none';
+    }
+  } else if(canvas){
+    canvas.style.display = 'none';
+  }
+})();
+</script>
