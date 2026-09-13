@@ -1,0 +1,352 @@
+<title>Au Bébé Parisien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --powder:#B8C4D4; --powder-deep:#98A8BE;
+    --cream:#F2EDE0; --cream-deep:#E6DCC4;
+    --burgundy:#6B3F42; --burgundy-deep:#4E2C2F;
+    --ink:#2A241C; --ink-soft:#6B6252; --white:#FFFDF8;
+    --status-open:#4F8F5B; --status-closed:#B24B2C;
+    --line: rgba(42,36,28,.13);
+    --shadow-1: 0 1px 2px rgba(42,36,28,.08), 0 8px 20px -12px rgba(42,36,28,.24);
+    --shadow-2: 0 8px 20px rgba(42,36,28,.12), 0 26px 48px -22px rgba(42,36,28,.34);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--cream); color:var(--ink); font-family:"Karla",sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;} a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;} ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--burgundy-deep); outline-offset:3px; border-radius:2px; }
+  .container{ max-width:1100px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.25rem,6vw,5.5rem); }
+  .section-deep{ background:var(--cream-deep); }
+  .eyebrow{ font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--burgundy); }
+  h2.section-title{ font-family:"Abril Fatface",Georgia,serif; font-weight:400; font-size:clamp(1.75rem,1.3rem+1.9vw,2.4rem); text-wrap:balance; margin-top:.4rem; line-height:1.15; }
+  .lede{ max-width:58ch; font-size:1.03rem; color:var(--ink-soft); }
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(242,237,224,.9); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line); }
+  .nav-inner{ max-width:1100px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Abril Fatface",Georgia,serif; font-weight:400; font-size:1.12rem; }
+  .brand span{ color:var(--burgundy); }
+  .nav-links{ display:flex; gap:1.6rem; } .nav-links a{ font-size:.87rem; font-weight:600; color:var(--ink-soft); }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.77rem; font-weight:700; border:1px solid var(--line); padding:.35rem .7rem; border-radius:999px; background:var(--white); white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .dot.is-open{ background:var(--status-open); box-shadow:0 0 0 3px rgba(79,143,91,.22); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.66rem 1.25rem; border-radius:999px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-burgundy{ background:var(--burgundy); color:var(--white); }
+  .btn-burgundy:hover{ background:var(--burgundy-deep); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--ink); color:var(--ink); } .btn-line:hover{ border-color:var(--burgundy); color:var(--burgundy); }
+  .btn-powder{ background:var(--powder-deep); color:var(--white); } .btn-powder:hover{ background:#7E92AC; }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--ink); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--burgundy-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Abril Fatface",Georgia,serif; font-size:1.5rem; color:var(--cream); }
+  .hero-inner{ max-width:1100px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"Abril Fatface",Georgia,serif; font-weight:400; font-size:clamp(2rem,1.5rem+2.3vw,3.1rem); line-height:1.15; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ font-style:normal; color:var(--burgundy); }
+  .hero-lede{ margin-top:1.1rem; font-size:1.05rem; color:var(--ink-soft); max-width:37ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid var(--line); background:var(--white); padding:.32rem .65rem; border-radius:999px; color:var(--ink-soft); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .year-plate{ background:var(--burgundy-deep); border-radius:8px; box-shadow:var(--shadow-2); padding:2rem 1.6rem; text-align:center; }
+  .year-plate .year{ font-family:"Abril Fatface",Georgia,serif; font-size:3rem; color:var(--powder); line-height:1; }
+  .year-plate .label{ margin-top:.6rem; font-size:.85rem; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,237,224,.6); }
+  .year-plate .name{ margin-top:1.2rem; font-family:"Abril Fatface",Georgia,serif; font-size:1.15rem; color:var(--cream); }
+  .info-strip{ border-block:1px solid var(--line); background:var(--white); }
+  .info-grid{ display:grid; grid-template-columns:repeat(3,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--burgundy); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+  .timeline{ margin-top:2.4rem; display:grid; grid-template-columns:repeat(3,1fr); gap:0; position:relative; }
+  .timeline::before{ content:""; position:absolute; top:1.3rem; left:16%; right:16%; height:1px; background:var(--line); }
+  .tl-step{ position:relative; padding-inline:.75rem; text-align:center; }
+  .tl-dot{ width:2.6rem; height:2.6rem; margin-inline:auto; border-radius:50%; background:var(--white); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; font-family:"Abril Fatface",Georgia,serif; font-size:.85rem; color:var(--burgundy); }
+  .tl-title{ margin-top:.9rem; font-weight:700; font-size:.95rem; }
+  .tl-text{ margin-top:.35rem; font-size:.84rem; color:var(--ink-soft); }
+  .avis-card{ margin-top:2rem; background:var(--white); border:1px solid var(--line); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"Abril Fatface",Georgia,serif; font-weight:400; font-size:1.2rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:var(--ink-soft); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--cream-deep); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:var(--ink-soft); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:var(--burgundy); flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+  footer{ background:var(--burgundy-deep); color:rgba(242,237,224,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid rgba(242,237,224,.14); }
+  footer .brand{ font-size:1.1rem; color:var(--cream); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--powder); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; } footer .foot-list a:hover{ color:var(--cream); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(242,237,224,.45); max-width:1100px; margin-inline:auto; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-burgundy{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:1fr; } .info-item{ border-left:none; border-top:1px solid var(--line); } .info-item:first-child{ border-top:none; }
+    .timeline{ grid-template-columns:1fr; gap:1.6rem; } .timeline::before{ display:none; }
+    .avis-card{ flex-direction:column; align-items:flex-start; } .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Au <span>Bébé Parisien</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#histoire">Notre histoire</a>
+      <a href="#produits">La boutique</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-burgundy" href="tel:+33495217424">04 95 21 74 24</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#histoire">Notre histoire</a>
+  <a href="#produits">La boutique</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-burgundy" href="tel:+33495217424">Appeler · 04 95 21 74 24</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Mercerie · Bonneterie — Cours Napoléon, Ajaccio</p>
+      <h1>Le temps s'arrête, <em>depuis 1929.</em></h1>
+      <p class="hero-lede">Trois générations d'une même famille, du même comptoir — mercerie, laines et vêtements tricotés pour bébés, faits sur place comme au premier jour.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Depuis 1929</span>
+        <span class="fact-chip">3 générations</span>
+        <span class="fact-chip">Tricot fait main</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-burgundy" href="#produits">Découvrir la boutique</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="year-plate">
+      <p class="year">1929</p>
+      <p class="label">Fondation</p>
+      <p class="name">Au Bébé Parisien</p>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">35 cours Napoléon, 20000 Ajaccio</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">04 95 21 74 24</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="histoire">
+  <div class="container">
+    <p class="eyebrow">Notre histoire</p>
+    <h2 class="section-title">Trois générations, un seul comptoir.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Fondée en 1929 par Louis et Blanche Escalaïs, la boutique est l'une des plus anciennes du cours Napoléon. D'abord bonneterie et sous-vêtements, elle se recentre sur la mercerie dans les années 1960 — et n'a plus jamais changé d'adresse.</p>
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="tl-dot">1929</div>
+        <p class="tl-title">Louis &amp; Blanche Escalaïs</p>
+        <p class="tl-text">Fondation de la boutique, bonneterie et sous-vêtements.</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">2ᵉ</div>
+        <p class="tl-title">Mireille Escalaïs</p>
+        <p class="tl-text">Leur fille reprend le comptoir familial.</p>
+      </div>
+      <div class="tl-step">
+        <div class="tl-dot">1986</div>
+        <p class="tl-title">Corinne Mozziconacci</p>
+        <p class="tl-text">Sa petite-fille tient la boutique aujourd'hui.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="produits">
+  <div class="container">
+    <p class="eyebrow">La boutique</p>
+    <h2 class="section-title">Mercerie, laines, tricot fait main.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Boutons, laines, fils et aiguilles au détail — et des vêtements tricotés pour bébés et enfants (châles, brassières, vestes) confectionnés sur place, à la tricoteuse.</p>
+    <div class="avis-card" style="margin-top:2rem;">
+      <div class="avis-left">
+        <svg viewBox="0 0 24 24" style="width:2.4rem;height:2.4rem;color:var(--burgundy);flex:none;" fill="none"><path d="M12 21V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 8a5 5 0 0110 0M7 8c0 3 2 5 5 5s5-2 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div>
+          <h3 style="font-family:'Abril Fatface',Georgia,serif; font-weight:400; font-size:1.1rem;">Un savoir-faire, pas un stock.</h3>
+          <p style="margin-top:.5rem; font-size:.9rem; color:var(--ink-soft);">Chaque pièce tricotée est différente — le choix de laine et de taille se fait directement en boutique ou par téléphone.</p>
+        </div>
+      </div>
+      <a class="btn btn-powder" href="tel:+33495217424">Appeler · 04 95 21 74 24</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Soyons honnêtes sur les avis.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Les avis se consultent sur Google.</h3>
+          <p>Plutôt que d'inventer des témoignages, on vous emmène directement voir les avis réels — ou à en laisser un si vous connaissez déjà la boutique.</p>
+        </div>
+      </div>
+      <a class="btn btn-burgundy" href="https://www.google.com/maps/search/?api=1&query=Au+Bebe+Parisien+35+cours+Napoleon+20000+Ajaccio" target="_blank" rel="noopener">Voir sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Cours Napoléon, à Ajaccio.</h2>
+      <p class="find-address">35 cours Napoléon, 20000 Ajaccio</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>04 95 21 74 24 — pour une question ou une commande.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Fermé le week-end — ouvert du lundi au vendredi.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-burgundy" href="https://www.google.com/maps/search/?api=1&query=Au+Bebe+Parisien+35+cours+Napoleon+20000+Ajaccio" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33495217424">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M170 46c-16 0-28 12-28 28 0 21 28 52 28 52s28-31 28-52c0-16-12-28-28-28z" fill="var(--burgundy)" stroke="var(--ink)" stroke-width="1.4"/>
+        <circle cx="170" cy="74" r="8" fill="var(--white)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Au <span>Bébé Parisien</span></a>
+      <p class="foot-tagline">Mercerie familiale cours Napoléon à Ajaccio, depuis 1929.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33495217424">04 95 21 74 24</a>
+        <span>35 cours Napoléon, 20000 Ajaccio</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Lun – Ven&nbsp; 9h – 12h / 14h30 – 19h</span>
+        <span>Fermé le week-end</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Au Bébé Parisien</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:null,
+    1:{morning:['09:00','12:00'], afternoon:['14:30','19:00']},
+    2:{morning:['09:00','12:00'], afternoon:['14:30','19:00']},
+    3:{morning:['09:00','12:00'], afternoon:['14:30','19:00']},
+    4:{morning:['09:00','12:00'], afternoon:['14:30','19:00']},
+    5:{morning:['09:00','12:00'], afternoon:['14:30','19:00']},
+    6:null
+  };
+  var dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    if(today){
+      var mOpen = toMinutes(today.morning[0]), mClose = toMinutes(today.morning[1]);
+      var aOpen = toMinutes(today.afternoon[0]), aClose = toMinutes(today.afternoon[1]);
+      if(minutes >= mOpen && minutes < mClose){ return { open:true, text:'Ouvert — pause à ' + fmt(today.morning[1]) }; }
+      if(minutes >= mClose && minutes < aOpen){ return { open:false, text:'En pause — réouvre à ' + fmt(today.afternoon[0]) }; }
+      if(minutes >= aOpen && minutes < aClose){ return { open:true, text:'Ouvert — ferme à ' + fmt(today.afternoon[1]) }; }
+    }
+    for(var i=0;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      if(!sched) continue;
+      if(i===0){
+        var oMin = toMinutes(sched.morning[0]);
+        if(minutes < oMin){ return { open:false, text:'Fermé — ouvre à ' + fmt(sched.morning[0]) }; }
+        continue;
+      }
+      var label = i===1 ? 'demain' : dayNames[d];
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(sched.morning[0]) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+  function apply(){
+    var status = getStatus(new Date());
+    var dot = document.getElementById('dotNav');
+    if(dot) dot.classList.toggle('is-open', status.open);
+    ['statusNav','infoHours'].forEach(function(id){ var el = document.getElementById(id); if(el) el.textContent = status.text; });
+  }
+  apply(); setInterval(apply, 60000);
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll(); window.addEventListener('scroll', onScroll, { passive:true });
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); });
+  });
+})();
+</script>
