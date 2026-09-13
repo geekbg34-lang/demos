@@ -1,0 +1,513 @@
+<title>Le Vieux Porto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --plum:#3E1F30;
+    --plum-deep:#2A1521;
+    --plum-mid:#4E2A3F;
+    --cream:#F5EFE6;
+    --cream-deep:#EADFCE;
+    --gold:#C9A24B;
+    --gold-bright:#E0BC6B;
+    --sage:#7E8F6B;
+    --white:#FFFDF9;
+    --status-open:#7FA173;
+    --status-closed:#D98B6C;
+    --line-dark: rgba(245,239,230,.16);
+    --line-light: rgba(62,31,48,.14);
+    --shadow-1: 0 1px 2px rgba(0,0,0,.2), 0 10px 24px -14px rgba(0,0,0,.5);
+    --shadow-2: 0 10px 24px rgba(0,0,0,.28), 0 30px 54px -24px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--plum); color:var(--cream); font-family:"Nunito Sans",ui-sans-serif,system-ui,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; border-radius:2px; }
+
+  .container{ max-width:1120px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.25rem,6vw,5.5rem); }
+  .section-cream{ background:var(--cream); color:var(--plum-deep); }
+
+  .eyebrow{ font-size:.75rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--gold-bright); }
+  .section-cream .eyebrow{ color:#8A6A22; }
+  h2.section-title{ font-family:"Spectral",Georgia,serif; font-weight:600; font-style:italic; font-size:clamp(1.85rem,1.4rem+2vw,2.5rem); text-wrap:balance; margin-top:.4rem; }
+  .lede{ max-width:58ch; font-size:1.02rem; color:rgba(245,239,230,.72); }
+  .section-cream .lede{ color:#5B4A3E; }
+
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(42,21,33,.88); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); transition:box-shadow .2s ease; }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line-dark), 0 12px 26px -20px rgba(0,0,0,.6); }
+  .nav-inner{ max-width:1120px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Spectral",Georgia,serif; font-weight:700; font-style:italic; font-size:1.28rem; }
+  .brand span{ color:var(--gold-bright); font-style:normal; }
+  .nav-links{ display:flex; gap:1.7rem; }
+  .nav-links a{ font-size:.87rem; font-weight:600; color:rgba(245,239,230,.72); }
+  .nav-links a:hover{ color:var(--cream); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.77rem; font-weight:700; border:1px solid var(--line-dark); padding:.35rem .7rem; border-radius:999px; white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .dot.is-open{ background:var(--status-open); box-shadow:0 0 0 3px rgba(127,161,115,.25); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.66rem 1.25rem; border-radius:999px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-gold{ background:var(--gold); color:var(--plum-deep); }
+  .btn-gold:hover{ background:var(--gold-bright); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--line-dark); color:var(--cream); }
+  .btn-line:hover{ border-color:var(--gold-bright); color:var(--gold-bright); }
+  .btn-plum{ background:var(--plum-deep); color:var(--cream); border:1px solid var(--line-dark); }
+  .btn-plum:hover{ border-color:var(--gold); }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--cream); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--plum-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Spectral",Georgia,serif; font-size:1.6rem; font-style:italic; font-weight:600; color:var(--cream); }
+
+  .hero-inner{ max-width:1120px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"Spectral",Georgia,serif; font-weight:600; font-size:clamp(2.3rem,1.7rem+2.6vw,3.6rem); line-height:1.08; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ color:var(--gold-bright); }
+  .hero-lede{ margin-top:1.15rem; font-size:1.05rem; color:rgba(245,239,230,.72); max-width:37ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid var(--line-dark); padding:.32rem .65rem; border-radius:999px; color:rgba(245,239,230,.78); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+
+  .label-card{ background:var(--cream); border-radius:10px; box-shadow:var(--shadow-2); padding:1.8rem; position:relative; }
+  .label-card::before{ content:""; position:absolute; inset:10px; border:1px solid var(--gold); border-radius:6px; pointer-events:none; }
+  .label-eyebrow{ text-align:center; font-size:.68rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#8A6A22; }
+  .label-title{ text-align:center; font-family:"Spectral",Georgia,serif; font-weight:700; font-style:italic; font-size:1.5rem; color:var(--plum-deep); margin-top:.4rem; }
+  .label-sub{ text-align:center; font-size:.8rem; color:#5B4A3E; margin-top:.3rem; }
+  .label-divider{ height:1px; background:var(--gold); opacity:.4; margin:1rem 0; }
+  .label-row{ display:flex; justify-content:space-between; font-size:.82rem; padding:.3rem 0; color:#5B4A3E; }
+  .label-row strong{ color:var(--plum-deep); }
+
+  .info-strip{ border-block:1px solid var(--line-light); }
+  .info-grid{ display:grid; grid-template-columns:repeat(3,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line-light); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:#8A6A22; flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8A7860; }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+
+  .badge-row{ margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:.7rem; }
+  .badge{ display:flex; align-items:center; gap:.55rem; background:var(--cream-deep); color:var(--plum-deep); border-radius:999px; padding:.5rem .9rem .5rem .7rem; font-size:.85rem; font-weight:700; }
+  .badge svg{ width:1.15rem; height:1.15rem; color:var(--sage); flex:none; }
+
+  .service-banner{ margin-top:1.8rem; display:flex; align-items:center; gap:.6rem; background:var(--cream-deep); color:#5B4A3E; border-radius:4px; padding:.75rem 1.05rem; font-size:.87rem; font-weight:700; }
+  .live-services{ margin-top:2rem; }
+  .svc-loading{ font-size:.9rem; color:rgba(245,239,230,.6); }
+  .section-cream .svc-loading{ color:#8A7860; }
+  .svc-example-tag{ display:inline-block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; border-radius:3px; padding:.3rem .65rem; margin-bottom:1.3rem; background:var(--cream-deep); color:#8A6A22; }
+  .svc-group + .svc-group{ margin-top:2.1rem; }
+  .svc-group h3{ font-family:"Spectral",Georgia,serif; font-weight:600; font-style:italic; font-size:1.15rem; padding-bottom:.55rem; border-bottom:1px solid var(--line-light); margin-bottom:.3rem; }
+  .svc-row{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:.7rem 0; border-bottom:1px solid var(--line-light); }
+  .svc-row:last-child{ border-bottom:none; }
+  .svc-name{ font-weight:700; font-size:.95rem; }
+  .svc-desc{ font-size:.82rem; color:#8A7860; margin-top:.1rem; }
+  .svc-price{ font-weight:700; white-space:nowrap; }
+  .old-price{ text-decoration:line-through; color:#8A7860; font-weight:500; margin-right:.4rem; }
+  .promo-price{ color:#A2431F; }
+
+  .cta-box{ margin-top:2.2rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--plum-deep); color:var(--cream); border-radius:10px; padding:1.5rem 1.8rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.88rem; color:rgba(245,239,230,.68); max-width:38ch; }
+  .cta-box strong{ display:block; font-family:"Spectral",Georgia,serif; font-weight:600; font-style:italic; font-size:1.2rem; color:var(--cream); }
+
+  .avis-card{ margin-top:2rem; background:var(--plum-mid); border:1px solid var(--line-dark); border-radius:10px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"Spectral",Georgia,serif; font-weight:600; font-style:italic; font-size:1.3rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:rgba(245,239,230,.68); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border:1px solid var(--line-light); border-radius:10px; overflow:hidden; background:var(--cream-deep); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:#5B4A3E; }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:#8A6A22; flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+
+  footer{ background:var(--plum-deep); color:rgba(245,239,230,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid var(--line-dark); }
+  footer .brand{ font-size:1.2rem; color:var(--cream); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; }
+  footer .foot-list a:hover{ color:var(--cream); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(245,239,230,.45); max-width:1120px; margin-inline:auto; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-gold{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:1fr; }
+    .info-item{ border-left:none; border-top:1px solid var(--line-light); }
+    .info-item:first-child{ border-top:none; }
+    .avis-card{ flex-direction:column; align-items:flex-start; }
+    .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Le Vieux <span>Porto</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos produits</a>
+      <a href="#maison">La maison</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-gold" href="tel:+33771592592">07 71 59 25 92</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos produits</a>
+  <a href="#maison">La maison</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-gold" href="tel:+33771592592">Appeler · 07 71 59 25 92</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Épicerie fine · Fromagerie · Charcuterie — Oyonnax</p>
+      <h1>Des trésors gourmands, <em>rue Pasteur.</em></h1>
+      <p class="hero-lede">Fromages affinés, charcuteries, thés et spécialités choisies avec soin — une épicerie fine ouverte presque tous les jours, du matin au soir.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Ouvert 7j/7</span>
+        <span class="fact-chip">Fromagerie &amp; charcuterie</span>
+        <span class="fact-chip">Thés &amp; épicerie fine</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#produits">Voir nos produits</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="label-card">
+      <p class="label-eyebrow">Épicerie fine</p>
+      <p class="label-title">Le Vieux Porto</p>
+      <p class="label-sub">Oyonnax, depuis toujours gourmand</p>
+      <div class="label-divider"></div>
+      <div class="label-row"><span>Adresse</span><strong>16 rue Pasteur</strong></div>
+      <div class="label-row"><span>Ville</span><strong>01100 Oyonnax</strong></div>
+      <div class="label-row"><span>Statut</span><strong id="labelStatus">…</strong></div>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">16 rue Pasteur, 01100 Oyonnax</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">07 71 59 25 92</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-cream" id="maison">
+  <div class="container">
+    <p class="eyebrow">La maison</p>
+    <h2 class="section-title">Une sélection, pas un supermarché.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Le Vieux Porto rassemble fromageries, charcuteries et épicerie fine dans une seule boutique de quartier — le genre d'adresse où l'on prend le temps de conseiller.</p>
+    <div class="badge-row">
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19v-5h4v5" stroke="currentColor" stroke-width="1.6"/></svg>
+        Commerce de quartier
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Ouvert 7j/7
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 19c9 1 14-4 14-14-9 0-13 5-14 14z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 18c3-4 6-7 12-11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Produits sélectionnés
+      </span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos produits</p>
+    <h2 class="section-title">Fromages, charcuterie, épicerie fine.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Les tarifs ci-dessous sont mis à jour par la boutique elle-même, depuis un simple tableur.</p>
+
+    <div class="service-banner" id="svcBanner" hidden>
+      <span aria-hidden="true">✨</span><span id="svcBannerText"></span>
+    </div>
+
+    <div class="live-services" id="liveServices">
+      <p class="svc-loading">Chargement des produits…</p>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Un plateau pour une occasion particulière ?</strong>
+        <p>Fromages, charcuterie ou coffret gourmand — composez votre plateau en appelant la boutique.</p>
+      </div>
+      <a class="btn btn-gold" href="tel:+33771592592">Appeler · 07 71 59 25 92</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-cream" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Soyez parmi les premiers à en parler.</h2>
+    <div class="avis-card" style="background:var(--white); border-color:var(--line-light);">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text" style="color:var(--plum-deep);">
+          <h3 style="color:var(--plum-deep);">Pas encore d'avis en ligne.</h3>
+          <p style="color:#5B4A3E;">Plutôt que d'inventer des témoignages, on préfère l'admettre : les avis Google sont encore à écrire. Le vôtre pourrait être l'un des premiers.</p>
+        </div>
+      </div>
+      <a class="btn btn-plum" href="https://www.google.com/maps/search/?api=1&query=Le+Vieux+Porto+16+rue+Pasteur+01100+Oyonnax" target="_blank" rel="noopener">Laisser un avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Rue Pasteur, à Oyonnax.</h2>
+      <p class="find-address" style="color:var(--cream);">16 rue Pasteur, 01100 Oyonnax</p>
+      <ul class="find-list" style="color:rgba(245,239,230,.72);">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" style="color:var(--gold-bright);"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>07 71 59 25 92 — pour une question ou une commande.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" style="color:var(--gold-bright);"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Ouvert tous les jours — horaires réduits le jeudi après-midi.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-gold" href="https://www.google.com/maps/search/?api=1&query=Le+Vieux+Porto+16+rue+Pasteur+01100+Oyonnax" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33771592592">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="#8A7860" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M170 46c-16 0-28 12-28 28 0 21 28 52 28 52s28-31 28-52c0-16-12-28-28-28z" fill="var(--gold)" stroke="var(--plum-deep)" stroke-width="1.4"/>
+        <circle cx="170" cy="74" r="8" fill="var(--cream)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Le Vieux <span>Porto</span></a>
+      <p class="foot-tagline">Épicerie fine, fromagerie et charcuterie à Oyonnax, ouverte 7 jours sur 7.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33771592592">07 71 59 25 92</a>
+        <span>16 rue Pasteur, 01100 Oyonnax</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Lun-Mer, Ven-Dim&nbsp; 8h – 20h</span>
+        <span>Jeudi&nbsp; 15h – 20h</span>
+        <span>Ouvert 7j/7</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Le Vieux Porto</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:{open:'08:00', close:'20:00'},
+    1:{open:'08:00', close:'20:00'},
+    2:{open:'08:00', close:'20:00'},
+    3:{open:'08:00', close:'20:00'},
+    4:{open:'15:00', close:'20:00'},
+    5:{open:'08:00', close:'20:00'},
+    6:{open:'08:00', close:'20:00'}
+  };
+  var dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    if(today){
+      var openMin = toMinutes(today.open), closeMin = toMinutes(today.close);
+      if(minutes >= openMin && minutes < closeMin){
+        return { open:true, text:'Ouvert — ferme à ' + fmt(today.close) };
+      }
+    }
+    for(var i=0;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      if(!sched) continue;
+      if(i===0){
+        var oMin = toMinutes(sched.open);
+        if(minutes < oMin){ return { open:false, text:'Fermé — ouvre à ' + fmt(sched.open) }; }
+        continue;
+      }
+      var label = i===1 ? 'demain' : dayNames[d];
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(sched.open) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+
+  function apply(){
+    var status = getStatus(new Date());
+    var dot = document.getElementById('dotNav');
+    if(dot) dot.classList.toggle('is-open', status.open);
+    ['statusNav','infoHours'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = status.text;
+    });
+    var labelStatus = document.getElementById('labelStatus');
+    if(labelStatus) labelStatus.textContent = status.open ? 'Ouvert' : 'Fermé';
+  }
+  apply();
+  setInterval(apply, 60000);
+
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  var SHEET_CSV_URL = "COLLEZ_ICI_LE_LIEN_CSV_DE_VOTRE_GOOGLE_SHEET";
+
+  var exampleRows = [
+    { Categorie:'Fromages', Prestation:'Comté 18 mois', Description:'Au kilo', Prix:'28,00', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Fromages', Prestation:'Tomme de montagne', Description:'Au kilo', Prix:'18,00', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Charcuterie', Prestation:'Jambon cru affiné', Description:'Au kilo', Prix:'32,00', PrixPromo:'26,00', Actif:'oui' },
+    { Categorie:'Épicerie fine', Prestation:'Thé en vrac', Description:'Les 100 g', Prix:'6,50', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Épicerie fine', Prestation:'Coffret gourmand', Description:'Sur commande', Prix:'25,00', PrixPromo:'', Actif:'oui' }
+  ];
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderServices(rows, isExample){
+    var groups = {}, order = [];
+    rows.forEach(function(r){
+      if(!r || !r.Prestation) return;
+      if((r.Actif || '').trim().toLowerCase() === 'non') return;
+      var cat = (r.Categorie || 'Autres').trim() || 'Autres';
+      if(!groups[cat]){ groups[cat] = []; order.push(cat); }
+      groups[cat].push(r);
+    });
+
+    var container = document.getElementById('liveServices');
+    container.innerHTML = '';
+
+    if(isExample){
+      var tag = document.createElement('p');
+      tag.className = 'svc-example-tag';
+      tag.textContent = 'Exemple — connectez votre Google Sheet pour afficher vos vrais produits';
+      container.appendChild(tag);
+    }
+
+    order.forEach(function(cat){
+      var group = document.createElement('div');
+      group.className = 'svc-group';
+      var h3 = document.createElement('h3');
+      h3.textContent = cat;
+      group.appendChild(h3);
+      groups[cat].forEach(function(item){
+        var row = document.createElement('div');
+        row.className = 'svc-row';
+        var left = document.createElement('div');
+        var priceHtml = item.PrixPromo && String(item.PrixPromo).trim()
+          ? '<span class="old-price">' + escapeHtml(item.Prix) + ' €</span><span class="promo-price">' + escapeHtml(item.PrixPromo) + ' €</span>'
+          : escapeHtml(item.Prix || '') + ' €';
+        left.innerHTML = '<p class="svc-name">' + escapeHtml(item.Prestation) + '</p>' + (item.Description ? '<p class="svc-desc">' + escapeHtml(item.Description) + '</p>' : '');
+        row.appendChild(left);
+        var priceEl = document.createElement('div');
+        priceEl.className = 'svc-price';
+        priceEl.innerHTML = priceHtml;
+        row.appendChild(priceEl);
+        group.appendChild(row);
+      });
+      container.appendChild(group);
+    });
+
+    var promoItems = rows.filter(function(r){
+      return r && r.PrixPromo && String(r.PrixPromo).trim() && (r.Actif || '').trim().toLowerCase() !== 'non';
+    });
+    var banner = document.getElementById('svcBanner');
+    if(promoItems.length){
+      document.getElementById('svcBannerText').textContent = promoItems.map(function(i){
+        return i.Prestation + ' à ' + i.PrixPromo + ' €';
+      }).join(' · ');
+      banner.hidden = false;
+    } else {
+      banner.hidden = true;
+    }
+  }
+
+  function loadServices(){
+    if(!SHEET_CSV_URL || SHEET_CSV_URL.indexOf('COLLEZ_ICI') !== -1){
+      renderServices(exampleRows, true);
+      return;
+    }
+    fetch(SHEET_CSV_URL)
+      .then(function(r){ return r.text(); })
+      .then(function(csv){
+        var parsed = window.Papa ? Papa.parse(csv, { header:true, skipEmptyLines:true }) : { data: [] };
+        if(parsed.data && parsed.data.length){ renderServices(parsed.data, false); }
+        else { renderServices(exampleRows, true); }
+      })
+      .catch(function(){ renderServices(exampleRows, true); });
+  }
+  loadServices();
+})();
+</script>
