@@ -1,0 +1,330 @@
+<title>Najim Boudal Primeur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --terracotta:#B5652E; --terracotta-deep:#8F4C1E;
+    --olive:#6B7A3A; --olive-deep:#4F5C29;
+    --stone:#F3ECDC; --stone-deep:#E6DAB8; --white:#FFFDF8;
+    --ink:#2E2A1F; --ink-soft:#645B45;
+    --status-open:#5C8A5A; --status-closed:#8A8071;
+    --line: rgba(46,42,31,.14);
+    --shadow-1: 0 1px 2px rgba(46,42,31,.09), 0 8px 20px -12px rgba(46,42,31,.26);
+    --shadow-2: 0 10px 24px rgba(46,42,31,.15), 0 30px 54px -24px rgba(46,42,31,.36);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--stone); color:var(--ink); font-family:"Sora",sans-serif; font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;} a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;} ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--olive-deep); outline-offset:3px; border-radius:2px; }
+  .container{ max-width:1120px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.5rem,6.5vw,5.75rem); }
+  .section-olive{ background:var(--olive-deep); color:var(--stone); }
+  .eyebrow{ font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--terracotta-deep); }
+  .section-olive .eyebrow{ color:#D9C888; }
+  h2.section-title{ font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:clamp(1.9rem,1.4rem+2.1vw,2.6rem); text-wrap:balance; margin-top:.4rem; }
+  .lede{ max-width:56ch; font-size:1.02rem; color:var(--ink-soft); }
+  .section-olive .lede{ color:rgba(243,236,220,.78); }
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(243,236,220,.92); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line); }
+  .nav-inner{ max-width:1120px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:1.15rem; }
+  .brand span{ color:var(--olive); }
+  .nav-links{ display:flex; gap:1.6rem; } .nav-links a{ font-size:.86rem; font-weight:600; color:var(--ink-soft); white-space:nowrap; }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.76rem; font-weight:700; border:1px solid var(--line); padding:.35rem .7rem; border-radius:3px; background:var(--white); white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.68rem 1.3rem; border-radius:3px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-olive{ background:var(--olive); color:var(--white); }
+  .btn-olive:hover{ background:var(--olive-deep); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--ink); color:var(--ink); } .btn-line:hover{ border-color:var(--olive); color:var(--olive-deep); }
+  .btn-terracotta{ background:var(--terracotta); color:var(--white); } .btn-terracotta:hover{ background:var(--terracotta-deep); }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--ink); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--olive-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"PT Serif",Georgia,serif; font-size:1.6rem; color:var(--stone); }
+  .hero-inner{ max-width:1120px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:clamp(2.2rem,1.7rem+2.3vw,3.2rem); line-height:1.12; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ font-style:italic; color:var(--terracotta); }
+  .hero-lede{ margin-top:1.1rem; font-size:1.05rem; color:var(--ink-soft); max-width:36ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid var(--line); background:var(--white); padding:.32rem .68rem; border-radius:999px; color:var(--ink-soft); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .hero-art{ background:var(--white); border-radius:10px; box-shadow:var(--shadow-2); padding:2rem; text-align:center; }
+  .hero-art svg{ width:170px; margin-inline:auto; }
+  .hero-art p{ margin-top:1rem; font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:1.05rem; }
+  .hero-art span{ display:block; margin-top:.3rem; font-size:.82rem; color:var(--ink-soft); }
+  .info-strip{ border-block:1px solid var(--line); background:var(--white); }
+  .info-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--olive); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+  .service-grid{ margin-top:2.2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+  .service-card{ background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1.6rem; box-shadow:var(--shadow-1); }
+  .service-card svg{ width:2rem; height:2rem; color:var(--terracotta); }
+  .service-card h3{ margin-top:1rem; font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:1.05rem; }
+  .service-card p{ margin-top:.5rem; font-size:.87rem; color:var(--ink-soft); }
+  .cta-box{ margin-top:2.4rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--olive); color:var(--white); border-radius:8px; padding:1.6rem 1.9rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.88rem; color:rgba(255,255,255,.85); max-width:40ch; }
+  .cta-box strong{ display:block; font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:1.2rem; color:var(--white); }
+  .note-box{ margin-top:1.5rem; display:flex; gap:.8rem; align-items:flex-start; background:var(--stone-deep); border-radius:8px; padding:1.1rem 1.3rem; font-size:.85rem; color:var(--ink-soft); }
+  .note-box svg{ width:1.1rem; height:1.1rem; flex:none; margin-top:.15rem; color:var(--terracotta-deep); }
+  .avis-card{ margin-top:2rem; background:var(--white); border:1px solid var(--line); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"PT Serif",Georgia,serif; font-weight:700; font-size:1.3rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:var(--ink-soft); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border-radius:8px; overflow:hidden; background:rgba(243,236,220,.06); border:1px solid rgba(243,236,220,.16); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:rgba(243,236,220,.75); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:#D9C888; flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+  footer{ background:var(--olive-deep); color:rgba(243,236,220,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid rgba(243,236,220,.14); }
+  footer .brand{ font-size:1.15rem; color:var(--stone); }
+  footer .brand span{ color:#D9C888; }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--terracotta); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; } footer .foot-list a:hover{ color:var(--stone); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(243,236,220,.45); max-width:1120px; margin-inline:auto; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-olive{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:repeat(2,1fr); } .info-item:nth-child(2){ border-left:none; }
+    .service-grid{ grid-template-columns:1fr; }
+    .avis-card{ flex-direction:column; align-items:flex-start; } .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Boudal <span>Primeur</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos produits</a>
+      <a href="#maison">Le magasin</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-olive" href="tel:+33466295223">04 66 29 52 23</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos produits</a>
+  <a href="#maison">Le magasin</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-olive" href="tel:+33466295223">Appeler · 04 66 29 52 23</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Primeur — Nîmes</p>
+      <h1>Les fruits et légumes de saison, <em>rue du Général Perrier.</em></h1>
+      <p class="hero-lede">Un primeur de quartier au cœur de Nîmes, approvisionné selon les saisons et les arrivages auprès de producteurs locaux.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Produits de saison</span>
+        <span class="fact-chip">Rue Gén. Perrier</span>
+        <span class="fact-chip">Producteurs locaux</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-olive" href="#produits">Nos produits</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 170 150" fill="none">
+        <path d="M10 140V60a75 75 0 01150 0v80" stroke="var(--terracotta)" stroke-width="4" fill="none"/>
+        <path d="M28 140V70a57 57 0 01114 0v70" stroke="var(--terracotta)" stroke-width="3" fill="none" opacity=".55"/>
+        <path d="M50 140V90a35 35 0 0170 0v50" stroke="var(--olive)" stroke-width="3" fill="none"/>
+        <circle cx="60" cy="120" r="6" fill="var(--olive)"/>
+        <circle cx="78" cy="126" r="6" fill="var(--terracotta)"/>
+        <circle cx="96" cy="118" r="6" fill="var(--olive)"/>
+        <circle cx="112" cy="124" r="6" fill="var(--terracotta)"/>
+      </svg>
+      <p>Sous les arènes</p>
+      <span>Nîmes, Gard</span>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Ouverture</p><p class="value">Voir avec la boutique</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">Rue du Général Perrier, Nîmes</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">04 66 29 52 23</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 3c3 3 7 7.5 7 11.5A7 7 0 015 14.5C5 10.5 9 6 12 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Spécialité</p><p class="value">Fruits et légumes</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos produits</p>
+    <h2 class="section-title">Des produits frais, selon les arrivages.</h2>
+    <p class="lede" style="margin-top:.9rem;">Une sélection variée de fruits et légumes, choisie auprès de producteurs locaux.</p>
+    <div class="service-grid">
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3 3 7 7.5 7 11.5A7 7 0 015 14.5C5 10.5 9 6 12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Fruits de saison</h3>
+        <p>Une sélection qui suit le rythme des saisons.</p>
+      </div>
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12c2-5 12-5 14 0-2 5-12 5-14 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Légumes frais</h3>
+        <p>Des légumes choisis pour leur fraîcheur et leur qualité.</p>
+      </div>
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 21V10l8-6 8 6v11" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Producteurs locaux</h3>
+        <p>Un approvisionnement pensé au fil des arrivages.</p>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16.2v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Horaires non communiqués en ligne — le plus sûr reste d'appeler le <a href="tel:+33466295223" style="font-weight:700;color:var(--ink);">04 66 29 52 23</a> avant de vous déplacer.</span>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Une envie de fruits et légumes frais ?</strong>
+        <p>Passez rue du Général Perrier ou appelez pour vérifier les horaires.</p>
+      </div>
+      <a class="btn btn-terracotta" href="tel:+33466295223">Appeler · 04 66 29 52 23</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="maison" style="background:var(--white);">
+  <div class="container">
+    <p class="eyebrow">Le magasin</p>
+    <h2 class="section-title">Un primeur de quartier, au cœur de Nîmes.</h2>
+    <p class="lede" style="margin-top:1rem;">Rue du Général Perrier, Najim Boudal propose fruits et légumes frais, choisis au fil des saisons et des arrivages auprès de producteurs locaux — un commerce de proximité, loin des rayons standardisés des grandes surfaces.</p>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Soyez parmi les premiers à en parler.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Pas encore d'avis en ligne.</h3>
+          <p>Plutôt que d'inventer des témoignages, on préfère l'admettre : les avis Google sont encore à écrire. Le vôtre pourrait être l'un des premiers.</p>
+        </div>
+      </div>
+      <a class="btn btn-olive" href="https://www.google.com/maps/search/?api=1&query=Najim+Boudal+rue+du+G%C3%A9n%C3%A9ral+Perrier+30000+N%C3%AEmes" target="_blank" rel="noopener">Laisser un avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-olive" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title" style="color:var(--stone);">Rue du Général Perrier, à Nîmes.</h2>
+      <p class="find-address" style="color:var(--stone);">Rue du Général Perrier, 30000 Nîmes</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>04 66 29 52 23 — pour vérifier avant de vous déplacer.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Commerce de quartier — pas d'horaires en ligne officiels pour l'instant.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-terracotta" href="https://www.google.com/maps/search/?api=1&query=Najim+Boudal+rue+du+G%C3%A9n%C3%A9ral+Perrier+30000+N%C3%AEmes" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" style="border-color:rgba(243,236,220,.4); color:var(--stone);" href="tel:+33466295223">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="rgba(243,236,220,.22)" stroke-width="1.4">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+        </g>
+        <path d="M60 180V110a50 50 0 01100 0v70" stroke="var(--terracotta)" stroke-width="3" fill="none"/>
+        <path d="M78 180V120a32 32 0 0164 0v60" stroke="var(--terracotta)" stroke-width="2.5" fill="none" opacity=".6"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Boudal <span>Primeur</span></a>
+      <p class="foot-tagline">Fruits et légumes frais, rue du Général Perrier à Nîmes.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33466295223">04 66 29 52 23</a>
+        <span>Rue du Général Perrier, 30000 Nîmes</span>
+      </div>
+    </div>
+    <div>
+      <h4>À savoir</h4>
+      <div class="foot-list">
+        <span>Fruits et légumes de saison</span>
+        <span>Horaires précis : nous appeler</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Najim Boudal Primeur</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll(); window.addEventListener('scroll', onScroll, { passive:true });
+  var statusNav = document.getElementById('statusNav');
+  if(statusNav) statusNav.textContent = 'Appeler pour horaires';
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); });
+  });
+})();
+</script>
