@@ -1,0 +1,324 @@
+<title>Apre Vent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --inkblue:#1B2A42; --inkblue-deep:#101B2D; --inkblue-mid:#25395A;
+    --gold:#B8923E; --gold-bright:#D4B168;
+    --parchment:#F1EAD6; --parchment-deep:#E4D8B8;
+    --ink:#221D14; --ink-soft:#655C48; --white:#FFFDF8;
+    --line-dark: rgba(241,234,214,.16); --line-light: rgba(34,29,20,.14);
+    --shadow-1: 0 1px 2px rgba(0,0,0,.2), 0 10px 24px -14px rgba(0,0,0,.5);
+    --shadow-2: 0 10px 24px rgba(0,0,0,.25), 0 30px 54px -24px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--inkblue); color:var(--parchment); font-family:"EB Garamond",Georgia,serif; font-size:18px; line-height:1.65; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;} a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;} ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; border-radius:2px; }
+  .container{ max-width:1080px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.25rem,6vw,5.5rem); }
+  .section-parchment{ background:var(--parchment); color:var(--ink); }
+  .eyebrow{ font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-bright); font-weight:600; }
+  .section-parchment .eyebrow{ color:#8A6420; }
+  h2.section-title{ font-family:"IM Fell English",Georgia,serif; font-style:italic; font-weight:400; font-size:clamp(1.9rem,1.4rem+2.1vw,2.7rem); text-wrap:balance; margin-top:.4rem; }
+  .lede{ max-width:58ch; font-size:1.08rem; color:rgba(241,234,214,.72); }
+  .section-parchment .lede{ color:var(--ink-soft); }
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(16,27,45,.9); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line-dark); }
+  .nav-inner{ max-width:1080px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"IM Fell English",Georgia,serif; font-style:italic; font-size:1.4rem; }
+  .brand span{ color:var(--gold-bright); }
+  .nav-links{ display:flex; gap:1.7rem; } .nav-links a{ font-size:.92rem; color:rgba(241,234,214,.72); }
+  .nav-links a:hover{ color:var(--parchment); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.78rem; font-weight:600; border:1px solid var(--line-dark); padding:.35rem .7rem; border-radius:999px; color:var(--gold-bright); white-space:nowrap; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.66rem 1.3rem; border-radius:999px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-gold{ background:var(--gold); color:var(--inkblue-deep); }
+  .btn-gold:hover{ background:var(--gold-bright); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--line-dark); color:var(--parchment); } .btn-line:hover{ border-color:var(--gold-bright); color:var(--gold-bright); }
+  .btn-dark{ border:1px solid var(--line-light); color:var(--ink); } .btn-dark:hover{ border-color:var(--gold); color:#8A6420; }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--parchment); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--inkblue-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"IM Fell English",Georgia,serif; font-style:italic; font-size:1.8rem; color:var(--parchment); }
+  .hero-inner{ max-width:1080px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"IM Fell English",Georgia,serif; font-style:italic; font-weight:400; font-size:clamp(2.4rem,1.7rem+3vw,4rem); line-height:1.08; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ color:var(--gold-bright); font-style:normal; }
+  .hero-lede{ margin-top:1.2rem; font-size:1.1rem; color:rgba(241,234,214,.72); max-width:38ch; }
+  .hero-facts{ margin-top:1.3rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.8rem; border:1px solid var(--line-dark); padding:.32rem .7rem; border-radius:999px; color:rgba(241,234,214,.78); }
+  .hero-actions{ margin-top:1.7rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .seal{ width:min(220px,80%); margin-inline:auto; }
+  .info-strip{ border-block:1px solid var(--line-light); background:var(--white); color:var(--ink); }
+  .info-grid{ display:grid; grid-template-columns:repeat(3,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line-light); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--gold); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:600; margin-top:.2rem; font-size:1rem; }
+  .badge-row{ margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:.7rem; }
+  .badge{ display:flex; align-items:center; gap:.55rem; background:var(--parchment-deep); color:#5A3E15; border-radius:999px; padding:.5rem .9rem .5rem .7rem; font-size:.88rem; font-weight:600; }
+  .badge svg{ width:1.15rem; height:1.15rem; color:var(--gold); flex:none; }
+  .specialties{ margin-top:2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; }
+  .spec-card{ background:var(--white); border:1px solid var(--line-light); border-radius:6px; padding:1.4rem; }
+  .spec-card svg{ width:1.5rem; height:1.5rem; color:var(--gold); }
+  .spec-card h3{ margin-top:.9rem; font-family:"IM Fell English",Georgia,serif; font-style:italic; font-size:1.2rem; }
+  .spec-card p{ margin-top:.4rem; font-size:.9rem; color:var(--ink-soft); }
+  .cta-box{ margin-top:2.2rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--inkblue-deep); color:var(--parchment); border-radius:6px; padding:1.6rem 1.9rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.92rem; color:rgba(241,234,214,.68); max-width:40ch; }
+  .cta-box strong{ display:block; font-family:"IM Fell English",Georgia,serif; font-style:italic; font-size:1.3rem; color:var(--parchment); }
+  .avis-card{ margin-top:2rem; background:var(--inkblue-mid); border:1px solid var(--line-dark); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"IM Fell English",Georgia,serif; font-style:italic; font-size:1.4rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.95rem; color:rgba(241,234,214,.68); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border:1px solid var(--line-light); border-radius:6px; overflow:hidden; background:var(--parchment-deep); }
+  .find-address{ font-size:1.1rem; font-weight:600; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.95rem; color:var(--ink-soft); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:var(--gold); flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+  footer{ background:var(--inkblue-deep); color:rgba(241,234,214,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid var(--line-dark); }
+  footer .brand{ font-size:1.3rem; color:var(--parchment); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.92rem; max-width:26ch; }
+  footer h4{ font-size:.74rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.92rem; } footer .foot-list a:hover{ color:var(--parchment); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.78rem; color:rgba(241,234,214,.45); max-width:1080px; margin-inline:auto; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-gold{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; } .seal{ display:none; }
+    .info-grid{ grid-template-columns:1fr; } .info-item{ border-left:none; border-top:1px solid var(--line-light); } .info-item:first-child{ border-top:none; }
+    .specialties{ grid-template-columns:1fr; }
+    .avis-card{ flex-direction:column; align-items:flex-start; } .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Apre <span>Vent</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#specialites">Spécialités</a>
+      <a href="#maison">L'expert</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill">Sur rendez-vous</span>
+      <a class="btn btn-gold" href="tel:+33679186175">06 79 18 61 75</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#specialites">Spécialités</a>
+  <a href="#maison">L'expert</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-gold" href="tel:+33679186175">Appeler · 06 79 18 61 75</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Numismatique · Livres anciens · Objets d'art — Avignon</p>
+      <h1>Ce que le temps a <em>rendu précieux.</em></h1>
+      <p class="hero-lede">Monnaies anciennes, bijoux, manuscrits et éditions originales — place Alexandre Farnèse, une expertise reconnue par la Chambre nationale des Experts Spécialisés.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Expert CNES</span>
+        <span class="fact-chip">5★ · 5 avis</span>
+        <span class="fact-chip">Paiement comptant</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#specialites">Voir les spécialités</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <svg class="seal" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+      <circle cx="100" cy="100" r="90" stroke="var(--gold)" stroke-width="2"/>
+      <circle cx="100" cy="100" r="78" stroke="var(--gold-bright)" stroke-width="1" stroke-dasharray="1 6"/>
+      <path d="M70 100a30 30 0 1160 0 30 30 0 01-60 0z" stroke="var(--gold-bright)" stroke-width="2"/>
+      <path d="M85 100h30M100 85v30" stroke="var(--gold-bright)" stroke-width="1.6"/>
+      <text x="100" y="40" text-anchor="middle" font-family="IM Fell English, Georgia, serif" font-style="italic" font-size="13" fill="var(--gold-bright)">APRE VENT</text>
+      <text x="100" y="168" text-anchor="middle" font-family="IM Fell English, Georgia, serif" font-style="italic" font-size="11" fill="var(--gold-bright)">AVIGNON</text>
+    </svg>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Accueil</p><p class="value">Sur rendez-vous</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">2 place Alexandre Farnèse, 84000 Avignon</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">06 79 18 61 75</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-parchment" id="maison">
+  <div class="container">
+    <p class="eyebrow">L'expert</p>
+    <h2 class="section-title">Un expert, pas un simple revendeur.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Membre de la Chambre nationale des Experts Spécialisés et ancien membre de la Ligue internationale de la Librairie Ancienne, Apre Vent achète et estime monnaies, bijoux anciens, livres et manuscrits — avec paiement direct et au comptant.</p>
+    <div class="badge-row">
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+        Expert membre de la CNES
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
+        Ex-membre de la LILA
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 17l5-5-3-3-5 5v3h3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 7l3-3 3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Paiement direct au comptant
+      </span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="specialites">
+  <div class="container">
+    <p class="eyebrow">Spécialités</p>
+    <h2 class="section-title" style="color:var(--parchment);">Numismatique, bibliophilie, objets d'art.</h2>
+    <div class="specialties">
+      <div class="spec-card">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.4"/></svg>
+        <h3>Numismatique</h3>
+        <p>Monnaies anciennes et de collection, achetées et expertisées.</p>
+      </div>
+      <div class="spec-card">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <h3>Livres &amp; manuscrits</h3>
+        <p>Éditions originales, belles reliures, manuscrits anciens.</p>
+      </div>
+      <div class="spec-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Bijoux &amp; objets d'art</h3>
+        <p>Bijoux anciens, objets de collection, successions.</p>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Une pièce à faire estimer, une succession à évaluer ?</strong>
+        <p>Chaque objet est différent — l'estimation se fait sur rendez-vous.</p>
+      </div>
+      <a class="btn btn-gold" href="tel:+33679186175">Appeler · 06 79 18 61 75</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-parchment" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Les avis, tels qu'ils sont vraiment.</h2>
+    <div class="avis-card" style="background:var(--white); border-color:var(--line-light);">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text" style="color:var(--ink);">
+          <h3 style="color:var(--ink);">Les avis se consultent sur Google.</h3>
+          <p style="color:var(--ink-soft);">Plutôt que d'afficher une note choisie, on vous emmène directement voir les avis réels des clients.</p>
+        </div>
+      </div>
+      <a class="btn btn-dark" href="https://www.google.com/maps/search/?api=1&query=Apre+Vent+2+place+Alexandre+Farnese+84000+Avignon" target="_blank" rel="noopener">Voir les avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title" style="color:var(--parchment);">Place Alexandre Farnèse, à Avignon.</h2>
+      <p class="find-address" style="color:var(--parchment);">2 place Alexandre Farnèse, 84000 Avignon</p>
+      <ul class="find-list" style="color:rgba(241,234,214,.72);">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>06 79 18 61 75 — pour prendre rendez-vous.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>Reçoit uniquement sur rendez-vous.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-gold" href="https://www.google.com/maps/search/?api=1&query=Apre+Vent+2+place+Alexandre+Farnese+84000+Avignon" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33679186175">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M170 46c-16 0-28 12-28 28 0 21 28 52 28 52s28-31 28-52c0-16-12-28-28-28z" fill="var(--gold)" stroke="var(--ink)" stroke-width="1.4"/>
+        <circle cx="170" cy="74" r="8" fill="var(--parchment)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Apre <span>Vent</span></a>
+      <p class="foot-tagline">Expert en numismatique, livres anciens et objets d'art à Avignon.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33679186175">06 79 18 61 75</a>
+        <span>2 place Alexandre Farnèse, 84000 Avignon</span>
+      </div>
+    </div>
+    <div>
+      <h4>Accueil</h4>
+      <div class="foot-list">
+        <span>Sur rendez-vous uniquement</span>
+        <span>Paiement direct au comptant</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Apre Vent</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll(); window.addEventListener('scroll', onScroll, { passive:true });
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); });
+  });
+})();
+</script>
