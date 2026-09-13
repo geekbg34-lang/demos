@@ -1,0 +1,334 @@
+<title>Framer — Poissonnerie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;600;700;900&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --marine:#1B3A4B; --marine-deep:#122730;
+    --foam:#6FA8A0; --foam-deep:#4E837C;
+    --coral:#E2694B; --coral-deep:#C24F35;
+    --sand:#EFE6D3; --sand-deep:#E2D5B8; --white:#FFFDF8;
+    --status-open:#4E837C; --status-closed:#8A8071;
+    --line: rgba(27,58,75,.14);
+    --shadow-1: 0 1px 2px rgba(18,39,48,.09), 0 8px 20px -12px rgba(18,39,48,.28);
+    --shadow-2: 0 10px 24px rgba(18,39,48,.16), 0 30px 54px -24px rgba(18,39,48,.38);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--sand); color:var(--marine-deep); font-family:"Rubik",sans-serif; font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;} a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;} ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--marine-deep); outline-offset:3px; border-radius:2px; }
+  .container{ max-width:1120px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.5rem,6.5vw,5.75rem); }
+  .section-marine{ background:var(--marine-deep); color:var(--sand); }
+  .eyebrow{ font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--coral-deep); }
+  .section-marine .eyebrow{ color:var(--foam); }
+  h2.section-title{ font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:clamp(1.9rem,1.4rem+2.1vw,2.6rem); text-wrap:balance; margin-top:.4rem; }
+  .lede{ max-width:56ch; font-size:1.02rem; color:rgba(18,39,48,.68); }
+  .section-marine .lede{ color:rgba(239,230,211,.75); }
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(239,230,211,.92); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line); }
+  .nav-inner{ max-width:1120px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:1.2rem; }
+  .brand span{ color:var(--marine); }
+  .nav-links{ display:flex; gap:1.6rem; } .nav-links a{ font-size:.86rem; font-weight:600; color:rgba(18,39,48,.68); white-space:nowrap; }
+  .nav-links a:hover{ color:var(--marine-deep); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.76rem; font-weight:700; border:1px solid var(--line); padding:.35rem .7rem; border-radius:3px; background:var(--white); white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.68rem 1.3rem; border-radius:3px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-marine{ background:var(--marine); color:var(--white); }
+  .btn-marine:hover{ background:var(--marine-deep); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--marine-deep); color:var(--marine-deep); } .btn-line:hover{ border-color:var(--marine); color:var(--marine); }
+  .btn-coral{ background:var(--coral); color:var(--white); } .btn-coral:hover{ background:var(--coral-deep); }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--marine-deep); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--marine-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Frank Ruhl Libre",Georgia,serif; font-size:1.6rem; color:var(--sand); }
+  .hero-inner{ max-width:1120px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:clamp(2.25rem,1.7rem+2.3vw,3.3rem); line-height:1.1; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ font-style:normal; color:var(--marine); }
+  .hero-lede{ margin-top:1.1rem; font-size:1.05rem; color:rgba(18,39,48,.68); max-width:36ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid var(--line); background:var(--white); padding:.32rem .68rem; border-radius:999px; color:rgba(18,39,48,.68); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .hero-art{ background:var(--marine-deep); border-radius:10px; box-shadow:var(--shadow-2); padding:2rem; text-align:center; }
+  .hero-art svg{ width:170px; margin-inline:auto; }
+  .hero-art p{ margin-top:1rem; font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:1.05rem; color:var(--sand); }
+  .hero-art span{ display:block; margin-top:.3rem; font-size:.82rem; color:var(--foam); }
+  .info-strip{ border-block:1px solid var(--line); background:var(--white); }
+  .info-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--marine); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(18,39,48,.6); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+  .catch-grid{ margin-top:2.2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+  .catch-card{ background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1.6rem; box-shadow:var(--shadow-1); }
+  .catch-card svg{ width:2rem; height:2rem; color:var(--coral); }
+  .catch-card h3{ margin-top:1rem; font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:1.08rem; }
+  .catch-card p{ margin-top:.5rem; font-size:.87rem; color:rgba(18,39,48,.68); }
+  .cta-box{ margin-top:2.4rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--marine); color:var(--white); border-radius:8px; padding:1.6rem 1.9rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.88rem; color:rgba(255,255,255,.85); max-width:40ch; }
+  .cta-box strong{ display:block; font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:1.25rem; color:var(--white); }
+  .note-box{ margin-top:1.5rem; display:flex; gap:.8rem; align-items:flex-start; background:var(--sand-deep); border-radius:8px; padding:1.1rem 1.3rem; font-size:.85rem; color:rgba(18,39,48,.75); }
+  .note-box svg{ width:1.1rem; height:1.1rem; flex:none; margin-top:.15rem; color:var(--coral-deep); }
+  .avis-card{ margin-top:2rem; background:var(--white); border:1px solid var(--line); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"Frank Ruhl Libre",Georgia,serif; font-weight:700; font-size:1.3rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:rgba(18,39,48,.68); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border-radius:8px; overflow:hidden; background:rgba(239,230,211,.06); border:1px solid rgba(239,230,211,.16); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:rgba(239,230,211,.72); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:var(--foam); flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+  footer{ background:var(--marine-deep); color:rgba(239,230,211,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid rgba(239,230,211,.14); }
+  footer .brand{ font-size:1.15rem; color:var(--sand); }
+  footer .brand span{ color:var(--foam); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--coral); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; } footer .foot-list a:hover{ color:var(--sand); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(239,230,211,.45); max-width:1120px; margin-inline:auto; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-marine{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:repeat(2,1fr); } .info-item:nth-child(2){ border-left:none; }
+    .catch-grid{ grid-template-columns:1fr; }
+    .avis-card{ flex-direction:column; align-items:flex-start; } .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Framer <span>Marée</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos produits</a>
+      <a href="#maison">La maison</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-marine" href="tel:+33607054499">06 07 05 44 99</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos produits</a>
+  <a href="#maison">La maison</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-marine" href="tel:+33607054499">Appeler · 06 07 05 44 99</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Poissonnerie — Quai Levant, La Rochelle</p>
+      <h1>La marée du jour, <em>quai Levant.</em></h1>
+      <p class="hero-lede">Poissons de mer, coquillages, crustacés et sushis, sélectionnés avec soin sur le port de La Rochelle.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Pêche raisonnée</span>
+        <span class="fact-chip">Quai Levant</span>
+        <span class="fact-chip">Produits frais</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-marine" href="#produits">Voir nos produits</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 200 200" fill="none">
+        <rect x="40" y="120" width="28" height="60" fill="var(--sand)"/>
+        <rect x="132" y="100" width="28" height="80" fill="var(--sand)"/>
+        <path d="M40 120l14-22 14 22z" fill="var(--coral)"/>
+        <path d="M132 100l14-22 14 22z" fill="var(--coral)"/>
+        <rect x="46" y="132" width="6" height="10" fill="var(--marine-deep)"/>
+        <rect x="58" y="132" width="6" height="10" fill="var(--marine-deep)"/>
+        <rect x="138" y="112" width="6" height="10" fill="var(--marine-deep)"/>
+        <rect x="150" y="112" width="6" height="10" fill="var(--marine-deep)"/>
+        <path d="M20 180 Q100 160 180 180" stroke="var(--foam)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M15 190 Q100 172 185 190" stroke="var(--foam)" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>
+      </svg>
+      <p>Le port de La Rochelle</p>
+      <span>Charente-Maritime</span>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Ouverture</p><p class="value">Voir avec la boutique</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">69 quai Levant, La Rochelle</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">06 07 05 44 99</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M3 12c2-4 6-6 9-6s7 2 9 6c-2 4-6 6-9 6s-7-2-9-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Spécialité</p><p class="value">Pêche du jour</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos produits</p>
+    <h2 class="section-title">De la mer à l'étal, sans détour.</h2>
+    <p class="lede" style="margin-top:.9rem;">Une sélection issue d'une pêche raisonnée, choisie pour sa fraîcheur.</p>
+    <div class="catch-grid">
+      <div class="catch-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 12c2-4 6-6 9-6s7 2 9 6c-2 4-6 6-9 6s-7-2-9-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Poissons de mer</h3>
+        <p>Une sélection variée selon l'arrivage du jour.</p>
+      </div>
+      <div class="catch-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3 3 7 7.5 7 11.5A7 7 0 015 14.5C5 10.5 9 6 12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Coquillages & crustacés</h3>
+        <p>Coquillages et crustacés frais, pour vos plateaux de fruits de mer.</p>
+      </div>
+      <div class="catch-card">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="4" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="6" y="14" width="12" height="4" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Sushis</h3>
+        <p>Une gamme de sushis préparés à partir des produits de l'étal.</p>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16.2v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Horaires non communiqués en ligne — le plus sûr reste d'appeler le <a href="tel:+33607054499" style="font-weight:700;color:var(--marine-deep);">06 07 05 44 99</a> avant de vous déplacer.</span>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Envie d'un plateau de fruits de mer ?</strong>
+        <p>Appelez pour connaître l'arrivage du jour et passer commande.</p>
+      </div>
+      <a class="btn btn-coral" href="tel:+33607054499">Appeler · 06 07 05 44 99</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="maison" style="background:var(--white);">
+  <div class="container">
+    <p class="eyebrow">La maison</p>
+    <h2 class="section-title">Une poissonnerie du quai Levant.</h2>
+    <p class="lede" style="margin-top:1rem;">Sur les quais de La Rochelle, Framer travaille des produits issus d'une pêche raisonnée — poissons de mer, coquillages et crustacés sélectionnés avec soin, loin des grandes surfaces et de leurs circuits standardisés.</p>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Soyez parmi les premiers à en parler.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Pas encore d'avis en ligne.</h3>
+          <p>Plutôt que d'inventer des témoignages, on préfère l'admettre : les avis Google sont encore à écrire. Le vôtre pourrait être l'un des premiers.</p>
+        </div>
+      </div>
+      <a class="btn btn-marine" href="https://www.google.com/maps/search/?api=1&query=Framer+69+quai+Levant+17000+La+Rochelle" target="_blank" rel="noopener">Laisser un avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-marine" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title" style="color:var(--sand);">Quai Levant, sur le port de La Rochelle.</h2>
+      <p class="find-address" style="color:var(--sand);">69 quai Levant, 17000 La Rochelle</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>06 07 05 44 99 — pour vérifier l'arrivage avant de vous déplacer.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Poissonnerie de quai — pas d'horaires en ligne officiels pour l'instant.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-coral" href="https://www.google.com/maps/search/?api=1&query=Framer+69+quai+Levant+17000+La+Rochelle" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" style="border-color:rgba(239,230,211,.4); color:var(--sand);" href="tel:+33607054499">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="rgba(239,230,211,.22)" stroke-width="1.4">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+        </g>
+        <path d="M40 180 Q160 60 300 180" stroke="var(--foam)" stroke-width="3" fill="none" opacity=".6"/>
+        <circle cx="170" cy="100" r="7" fill="var(--coral)"/>
+        <circle cx="170" cy="100" r="14" fill="none" stroke="var(--coral)" stroke-width="2" opacity=".55"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Framer <span>Marée</span></a>
+      <p class="foot-tagline">Poissonnerie de quai — produits de la mer à La Rochelle.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33607054499">06 07 05 44 99</a>
+        <span>69 quai Levant, 17000 La Rochelle</span>
+      </div>
+    </div>
+    <div>
+      <h4>À savoir</h4>
+      <div class="foot-list">
+        <span>Produits frais, arrivage du jour</span>
+        <span>Horaires précis : nous appeler</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Framer</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll(); window.addEventListener('scroll', onScroll, { passive:true });
+  var statusNav = document.getElementById('statusNav');
+  if(statusNav) statusNav.textContent = 'Appeler pour horaires';
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); });
+  });
+})();
+</script>
