@@ -1,0 +1,518 @@
+<title>Maxi Pressing Vienne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --paper:#EEF2F1;
+    --paper-deep:#E1E8E7;
+    --paper-line: rgba(22,38,42,.14);
+    --ink:#16262A;
+    --ink-soft:#57696B;
+    --teal:#1B6E68;
+    --teal-deep:#134E4A;
+    --teal-pale:#CFE7E2;
+    --white:#FFFFFF;
+    --status-open:#3E8F6A;
+    --status-closed:#B24B2C;
+    --shadow-1: 0 1px 2px rgba(22,38,42,.07), 0 8px 20px -12px rgba(22,38,42,.22);
+    --shadow-2: 0 8px 20px rgba(22,38,42,.10), 0 26px 48px -22px rgba(22,38,42,.32);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:"Work Sans",ui-sans-serif,system-ui,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--teal-deep); outline-offset:3px; border-radius:2px; }
+
+  .mono{ font-family:"IBM Plex Mono",ui-monospace,monospace; }
+  .container{ max-width:1140px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.25rem,6vw,5.5rem); }
+  .section-deep{ background:var(--paper-deep); }
+
+  .eyebrow{ font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--teal-deep); }
+  h2.section-title{ font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(1.8rem,1.4rem+1.8vw,2.4rem); text-wrap:balance; margin-top:.4rem; letter-spacing:-.01em; }
+  .lede{ max-width:58ch; font-size:1.02rem; color:var(--ink-soft); }
+
+  /* NAV */
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(238,242,241,.9); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border-bottom:1px solid transparent; transition:border-color .2s ease, box-shadow .2s ease; }
+  .nav.scrolled{ border-color:var(--paper-line); box-shadow:0 1px 0 var(--paper-line); }
+  .nav-inner{ max-width:1140px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Archivo",sans-serif; font-weight:800; font-size:1.22rem; letter-spacing:-.01em; }
+  .brand span{ color:var(--teal); }
+  .nav-links{ display:flex; gap:1.7rem; }
+  .nav-links a{ font-size:.88rem; font-weight:600; color:var(--ink-soft); }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-family:"IBM Plex Mono",monospace; font-size:.76rem; font-weight:600; border:1px solid var(--paper-line); padding:.35rem .7rem; border-radius:3px; background:var(--white); white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .dot.is-open{ background:var(--status-open); box-shadow:0 0 0 3px rgba(62,143,106,.22); }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.66rem 1.25rem; border-radius:3px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-teal{ background:var(--teal); color:var(--white); }
+  .btn-teal:hover{ background:var(--teal-deep); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--ink); color:var(--ink); }
+  .btn-line:hover{ border-color:var(--teal); color:var(--teal-deep); }
+  .btn-dark{ background:var(--ink); color:var(--paper); }
+  .btn-dark:hover{ background:#0E1B1E; }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--ink); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--ink); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Archivo",sans-serif; font-size:1.6rem; font-weight:700; color:var(--paper); }
+
+  /* HERO with ticket motif */
+  .hero-inner{ max-width:1140px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.1fr .8fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(2.3rem,1.7rem+2.6vw,3.5rem); line-height:1.03; letter-spacing:-.015em; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ font-style:normal; color:var(--teal); }
+  .hero-lede{ margin-top:1.1rem; font-size:1.05rem; color:var(--ink-soft); max-width:36ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:600; border:1px solid var(--paper-line); background:var(--white); padding:.32rem .65rem; border-radius:3px; color:var(--ink-soft); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+
+  .ticket{ background:var(--white); border-radius:4px; box-shadow:var(--shadow-2); position:relative; padding:1.6rem 1.7rem; }
+  .ticket::before, .ticket::after{ content:""; position:absolute; left:50%; transform:translateX(-50%); width:22px; height:11px; background:var(--paper); border-radius:0 0 999px 999px; }
+  .ticket::before{ top:-1px; }
+  .ticket::after{ bottom:-1px; border-radius:999px 999px 0 0; }
+  .ticket-row{ display:flex; justify-content:space-between; align-items:baseline; padding:.55rem 0; border-bottom:1px dashed var(--paper-line); }
+  .ticket-row:last-child{ border-bottom:none; }
+  .ticket-label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .ticket-value{ font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:.92rem; text-align:right; }
+  .ticket-num{ font-family:"Archivo",sans-serif; font-weight:800; font-size:1.8rem; color:var(--teal-deep); text-align:center; margin-bottom:.4rem; }
+
+  /* INFO STRIP */
+  .info-strip{ border-block:1px solid var(--paper-line); background:var(--white); }
+  .info-grid{ display:grid; grid-template-columns:repeat(3,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--paper-line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--teal); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-family:"IBM Plex Mono",monospace; font-size:.7rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+
+  /* SERVICES dynamique */
+  .service-banner{ margin-top:1.8rem; display:flex; align-items:center; gap:.6rem; background:var(--teal-pale); color:var(--teal-deep); border-radius:4px; padding:.75rem 1.05rem; font-size:.87rem; font-weight:700; }
+  .live-services{ margin-top:2rem; }
+  .svc-loading{ font-size:.9rem; color:var(--ink-soft); }
+  .svc-example-tag{ display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:.7rem; font-weight:600; color:var(--teal-deep); text-transform:uppercase; letter-spacing:.06em; background:var(--white); border:1px solid var(--paper-line); border-radius:3px; padding:.3rem .65rem; margin-bottom:1.3rem; }
+  .svc-group + .svc-group{ margin-top:2.1rem; }
+  .svc-group h3{ font-family:"Archivo",sans-serif; font-weight:700; font-size:1.1rem; padding-bottom:.55rem; border-bottom:1px solid var(--paper-line); margin-bottom:.3rem; }
+  .svc-row{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; padding:.7rem 0; border-bottom:1px solid var(--paper-line); }
+  .svc-row:last-child{ border-bottom:none; }
+  .svc-name{ font-weight:600; font-size:.95rem; }
+  .svc-desc{ font-size:.82rem; color:var(--ink-soft); margin-top:.1rem; }
+  .svc-price{ font-family:"IBM Plex Mono",monospace; font-weight:600; white-space:nowrap; }
+  .old-price{ text-decoration:line-through; color:var(--ink-soft); font-weight:500; margin-right:.4rem; }
+  .promo-price{ color:#B0431F; }
+
+  .cta-box{ margin-top:2.2rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--ink); color:var(--paper); border-radius:6px; padding:1.5rem 1.8rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.88rem; color:rgba(238,242,241,.68); max-width:38ch; }
+  .cta-box strong{ display:block; font-family:"Archivo",sans-serif; font-weight:700; font-size:1.15rem; color:var(--paper); }
+
+  /* POINTS FORTS */
+  .points-grid{ margin-top:2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; }
+  .point-card{ background:var(--white); border:1px solid var(--paper-line); border-radius:6px; padding:1.4rem; }
+  .point-card svg{ width:1.5rem; height:1.5rem; color:var(--teal); }
+  .point-card h3{ margin-top:.9rem; font-family:"Archivo",sans-serif; font-weight:700; font-size:1rem; }
+  .point-card p{ margin-top:.4rem; font-size:.85rem; color:var(--ink-soft); }
+
+  /* AVIS honnête */
+  .avis-card{ margin-top:2rem; background:var(--white); border:1px solid var(--paper-line); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"Archivo",sans-serif; font-weight:700; font-size:1.3rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:var(--ink-soft); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+
+  /* FIND */
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border:1px solid var(--paper-line); border-radius:6px; overflow:hidden; background:var(--white); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:var(--ink-soft); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:var(--teal); flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+
+  footer{ background:var(--ink); color:rgba(238,242,241,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid rgba(238,242,241,.14); }
+  footer .brand{ font-size:1.25rem; color:var(--paper); }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-family:"IBM Plex Mono",monospace; font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--teal-pale); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; }
+  footer .foot-list a:hover{ color:var(--paper); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(238,242,241,.45); max-width:1140px; margin-inline:auto; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-teal{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:1fr; }
+    .info-item{ border-left:none; border-top:1px solid var(--paper-line); }
+    .info-item:first-child{ border-top:none; }
+    .points-grid{ grid-template-columns:1fr; }
+    .avis-card{ flex-direction:column; align-items:flex-start; }
+    .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Maxi <span>Pressing</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#prestations">Prestations</a>
+      <a href="#atouts">Pourquoi nous</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-teal" href="tel:+33474317012">04 74 31 70 12</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#prestations">Prestations</a>
+  <a href="#atouts">Pourquoi nous</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-teal" href="tel:+33474317012">Appeler · 04 74 31 70 12</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Pressing · Laverie · Couture — Vienne</p>
+      <h1>Votre linge, <em>impeccable</em>, cours de Verdun.</h1>
+      <p class="hero-lede">Nettoyage, repassage, couture et retouches — un pressing de quartier ouvert tous les jours, du matin tôt jusqu'au soir.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Ouvert 7j/7</span>
+        <span class="fact-chip">6h00 – 21h00</span>
+        <span class="fact-chip">Retouches &amp; couture</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-teal" href="#prestations">Voir les prestations</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="ticket">
+      <p class="ticket-num mono">N° 48</p>
+      <div class="ticket-row"><span class="ticket-label">Statut</span><span class="ticket-value" id="ticketStatus">…</span></div>
+      <div class="ticket-row"><span class="ticket-label">Adresse</span><span class="ticket-value">48 cours Verdun</span></div>
+      <div class="ticket-row"><span class="ticket-label">Ville</span><span class="ticket-value">38200 Vienne</span></div>
+      <div class="ticket-row"><span class="ticket-label">Téléphone</span><span class="ticket-value">04 74 31 70 12</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">48 cours Verdun, 38200 Vienne</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">04 74 31 70 12</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="prestations">
+  <div class="container">
+    <p class="eyebrow">Prestations</p>
+    <h2 class="section-title">Nettoyage, repassage, couture.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Les tarifs ci-dessous sont modifiés directement par le pressing depuis un tableur — aucune intervention technique nécessaire pour changer un prix ou ajouter une prestation.</p>
+
+    <div class="service-banner" id="svcBanner" hidden>
+      <span aria-hidden="true">✨</span><span id="svcBannerText"></span>
+    </div>
+
+    <div class="live-services" id="liveServices">
+      <p class="svc-loading">Chargement des tarifs…</p>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Un vêtement particulier, une tache tenace ?</strong>
+        <p>Chaque textile est différent — le plus sûr reste de passer en boutique ou d'appeler directement.</p>
+      </div>
+      <a class="btn btn-teal" href="tel:+33474317012">Appeler · 04 74 31 70 12</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="atouts">
+  <div class="container">
+    <p class="eyebrow">Pourquoi ce pressing</p>
+    <h2 class="section-title">Un service de quartier, disponible tous les jours.</h2>
+    <div class="points-grid">
+      <div class="point-card">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Ouvert 7j/7</h3>
+        <p>De 6h à 21h, tous les jours de la semaine, y compris le dimanche.</p>
+      </div>
+      <div class="point-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 17l5-5-3-3-5 5v3h3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 7l3-3 3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l6-6" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>Couture &amp; retouches</h3>
+        <p>Ourlets, réparations et retouches faits sur place, en plus du pressing classique.</p>
+      </div>
+      <div class="point-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h3>En plein centre</h3>
+        <p>Cours Verdun, facilement accessible pour un dépôt avant ou après le travail.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Les avis, tels qu'ils sont vraiment.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Les avis se consultent sur Google.</h3>
+          <p>Plutôt que d'afficher une note choisie, on vous emmène directement voir les avis réels laissés par les clients — vous vous faites votre propre idée.</p>
+        </div>
+      </div>
+      <a class="btn btn-teal" href="https://www.google.com/maps/search/?api=1&query=Maxi+Pressing+48+cours+Verdun+38200+Vienne" target="_blank" rel="noopener">Voir les avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Cours Verdun, à Vienne.</h2>
+      <p class="find-address">48 cours Verdun, 38200 Vienne</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>04 74 31 70 12 — pour toute question avant de vous déplacer.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Ouvert tous les jours, 6h00 – 21h00.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-dark" href="https://www.google.com/maps/search/?api=1&query=Maxi+Pressing+48+cours+Verdun+38200+Vienne" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33474317012">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M170 46c-16 0-28 12-28 28 0 21 28 52 28 52s28-31 28-52c0-16-12-28-28-28z" fill="var(--teal)" stroke="var(--ink)" stroke-width="1.4"/>
+        <circle cx="170" cy="74" r="8" fill="var(--white)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Maxi <span>Pressing</span></a>
+      <p class="foot-tagline">Pressing, laverie et retouches à Vienne, ouvert 7 jours sur 7.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33474317012">04 74 31 70 12</a>
+        <span>48 cours Verdun, 38200 Vienne</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Tous les jours&nbsp; 6h00 – 21h00</span>
+        <span>Ouvert 7j/7</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Maxi Pressing</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:{open:'06:00', close:'21:00'}, 1:{open:'06:00', close:'21:00'}, 2:{open:'06:00', close:'21:00'},
+    3:{open:'06:00', close:'21:00'}, 4:{open:'06:00', close:'21:00'}, 5:{open:'06:00', close:'21:00'}, 6:{open:'06:00', close:'21:00'}
+  };
+  var dayNames = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    if(today){
+      var openMin = toMinutes(today.open), closeMin = toMinutes(today.close);
+      if(minutes >= openMin && minutes < closeMin){
+        return { open:true, text:'Ouvert — ferme à ' + fmt(today.close) };
+      }
+    }
+    for(var i=0;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      if(!sched) continue;
+      if(i===0){
+        var oMin = toMinutes(sched.open);
+        if(minutes < oMin){ return { open:false, text:'Fermé — ouvre à ' + fmt(sched.open) }; }
+        continue;
+      }
+      var label = i===1 ? 'demain' : dayNames[d];
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(sched.open) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+
+  function apply(){
+    var status = getStatus(new Date());
+    var dot = document.getElementById('dotNav');
+    if(dot) dot.classList.toggle('is-open', status.open);
+    ['statusNav','infoHours'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = status.text;
+    });
+    var ticket = document.getElementById('ticketStatus');
+    if(ticket) ticket.textContent = status.open ? 'OUVERT' : 'FERMÉ';
+  }
+  apply();
+  setInterval(apply, 60000);
+
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  /* ---------- TARIFS DYNAMIQUES (Google Sheet) ----------
+     1) Copier le modèle fourni, remplir Categorie/Prestation/Description/Prix/PrixPromo/Actif.
+     2) Fichier > Partager > Publier sur le Web > format CSV.
+     3) Coller le lien ci-dessous. */
+  var SHEET_CSV_URL = "COLLEZ_ICI_LE_LIEN_CSV_DE_VOTRE_GOOGLE_SHEET";
+
+  var exampleRows = [
+    { Categorie:'Pressing', Prestation:'Costume 2 pièces', Description:'', Prix:'12,50', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Pressing', Prestation:'Manteau', Description:'', Prix:'14,00', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Pressing', Prestation:'Chemise', Description:'', Prix:'4,50', PrixPromo:'3,50', Actif:'oui' },
+    { Categorie:'Couture & retouches', Prestation:'Ourlet pantalon', Description:'', Prix:'9,00', PrixPromo:'', Actif:'oui' },
+    { Categorie:'Couture & retouches', Prestation:'Fermeture éclair', Description:'Selon vêtement', Prix:'15,00', PrixPromo:'', Actif:'oui' }
+  ];
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderServices(rows, isExample){
+    var groups = {}, order = [];
+    rows.forEach(function(r){
+      if(!r || !r.Prestation) return;
+      if((r.Actif || '').trim().toLowerCase() === 'non') return;
+      var cat = (r.Categorie || 'Autres').trim() || 'Autres';
+      if(!groups[cat]){ groups[cat] = []; order.push(cat); }
+      groups[cat].push(r);
+    });
+
+    var container = document.getElementById('liveServices');
+    container.innerHTML = '';
+
+    if(isExample){
+      var tag = document.createElement('p');
+      tag.className = 'svc-example-tag';
+      tag.textContent = 'Exemple — connectez votre Google Sheet pour afficher vos vrais tarifs';
+      container.appendChild(tag);
+    }
+
+    order.forEach(function(cat){
+      var group = document.createElement('div');
+      group.className = 'svc-group';
+      var h3 = document.createElement('h3');
+      h3.textContent = cat;
+      group.appendChild(h3);
+      groups[cat].forEach(function(item){
+        var row = document.createElement('div');
+        row.className = 'svc-row';
+        var left = document.createElement('div');
+        var priceHtml = item.PrixPromo && String(item.PrixPromo).trim()
+          ? '<span class="old-price">' + escapeHtml(item.Prix) + ' €</span><span class="promo-price">' + escapeHtml(item.PrixPromo) + ' €</span>'
+          : escapeHtml(item.Prix || '') + ' €';
+        left.innerHTML = '<p class="svc-name">' + escapeHtml(item.Prestation) + '</p>' + (item.Description ? '<p class="svc-desc">' + escapeHtml(item.Description) + '</p>' : '');
+        row.appendChild(left);
+        var priceEl = document.createElement('div');
+        priceEl.className = 'svc-price';
+        priceEl.innerHTML = priceHtml;
+        row.appendChild(priceEl);
+        group.appendChild(row);
+      });
+      container.appendChild(group);
+    });
+
+    var promoItems = rows.filter(function(r){
+      return r && r.PrixPromo && String(r.PrixPromo).trim() && (r.Actif || '').trim().toLowerCase() !== 'non';
+    });
+    var banner = document.getElementById('svcBanner');
+    if(promoItems.length){
+      document.getElementById('svcBannerText').textContent = promoItems.map(function(i){
+        return i.Prestation + ' à ' + i.PrixPromo + ' €';
+      }).join(' · ');
+      banner.hidden = false;
+    } else {
+      banner.hidden = true;
+    }
+  }
+
+  function loadServices(){
+    if(!SHEET_CSV_URL || SHEET_CSV_URL.indexOf('COLLEZ_ICI') !== -1){
+      renderServices(exampleRows, true);
+      return;
+    }
+    fetch(SHEET_CSV_URL)
+      .then(function(r){ return r.text(); })
+      .then(function(csv){
+        var parsed = window.Papa ? Papa.parse(csv, { header:true, skipEmptyLines:true }) : { data: [] };
+        if(parsed.data && parsed.data.length){ renderServices(parsed.data, false); }
+        else { renderServices(exampleRows, true); }
+      })
+      .catch(function(){ renderServices(exampleRows, true); });
+  }
+  loadServices();
+})();
+</script>
