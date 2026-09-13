@@ -1,0 +1,330 @@
+<title>Les Délices De La Roche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --apricot:#E08A4B; --apricot-deep:#BD6F35;
+    --cacao:#4A342A; --cacao-deep:#33241D;
+    --cream:#FBF3E6; --cream-deep:#EFDFC0; --white:#FFFDF9;
+    --ink:#2B231C; --ink-soft:#63564A;
+    --status-open:#5C8A5A; --status-closed:#8A8071;
+    --line: rgba(43,35,28,.14);
+    --shadow-1: 0 1px 2px rgba(43,35,28,.09), 0 8px 20px -12px rgba(43,35,28,.26);
+    --shadow-2: 0 10px 24px rgba(43,35,28,.15), 0 30px 54px -24px rgba(43,35,28,.36);
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--cream); color:var(--ink); font-family:"Nunito",sans-serif; font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+  img,svg{max-width:100%;display:block;} a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p{margin:0;} ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--cacao-deep); outline-offset:3px; border-radius:2px; }
+  .container{ max-width:1120px; margin-inline:auto; padding-inline:clamp(1.25rem,4vw,2.75rem); }
+  .section{ padding-block:clamp(3.5rem,6.5vw,5.75rem); }
+  .section-cacao{ background:var(--cacao-deep); color:var(--cream); }
+  .eyebrow{ font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--apricot-deep); }
+  .section-cacao .eyebrow{ color:#F0B87F; }
+  h2.section-title{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:clamp(1.9rem,1.4rem+2.1vw,2.6rem); text-wrap:balance; margin-top:.4rem; }
+  .lede{ max-width:56ch; font-size:1.02rem; color:var(--ink-soft); }
+  .section-cacao .lede{ color:rgba(251,243,230,.78); }
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(251,243,230,.92); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .nav.scrolled{ box-shadow:0 1px 0 var(--line); }
+  .nav-inner{ max-width:1120px; margin-inline:auto; padding:1rem clamp(1.25rem,4vw,2.75rem); display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .brand{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:1.05rem; }
+  .brand span{ color:var(--apricot); }
+  .nav-links{ display:flex; gap:1.6rem; } .nav-links a{ font-size:.86rem; font-weight:600; color:var(--ink-soft); white-space:nowrap; }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-actions{ display:flex; align-items:center; gap:.9rem; }
+  .status-pill{ display:flex; align-items:center; gap:.45rem; font-size:.76rem; font-weight:700; border:1px solid var(--line); padding:.35rem .7rem; border-radius:3px; background:var(--white); white-space:nowrap; }
+  .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--status-closed); flex:none; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.68rem 1.3rem; border-radius:3px; font-size:.86rem; font-weight:700; white-space:nowrap; transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .btn-cacao{ background:var(--cacao); color:var(--white); }
+  .btn-cacao:hover{ background:var(--cacao-deep); transform:translateY(-1px); box-shadow:var(--shadow-1); }
+  .btn-line{ border:1px solid var(--ink); color:var(--ink); } .btn-line:hover{ border-color:var(--apricot); color:var(--apricot-deep); }
+  .btn-apricot{ background:var(--apricot); color:var(--white); } .btn-apricot:hover{ background:var(--apricot-deep); }
+  .burger{ display:none; width:2.1rem; height:2.1rem; position:relative; }
+  .burger span{ position:absolute; left:.15rem; right:.15rem; height:2px; background:var(--ink); transition:transform .25s ease, opacity .25s ease; }
+  .burger span:nth-child(1){ top:.6rem; } .burger span:nth-child(2){ top:1.05rem; } .burger span:nth-child(3){ top:1.5rem; }
+  body.menu-open .burger span:nth-child(1){ transform:translateY(.45rem) rotate(45deg); }
+  body.menu-open .burger span:nth-child(2){ opacity:0; }
+  body.menu-open .burger span:nth-child(3){ transform:translateY(-.45rem) rotate(-45deg); }
+  .mobile-menu{ position:fixed; inset:0; z-index:49; background:var(--cacao-deep); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease, visibility .25s ease; }
+  body.menu-open .mobile-menu{ opacity:1; visibility:visible; transform:translateY(0); }
+  .mobile-menu a{ font-family:"Playfair Display",Georgia,serif; font-size:1.5rem; color:var(--cream); }
+  .hero-inner{ max-width:1120px; margin-inline:auto; padding:clamp(2.5rem,6vw,4rem) clamp(1.25rem,4vw,2.75rem) clamp(3rem,7vw,4.5rem); display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,4vw,3rem); align-items:center; }
+  .hero h1{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:clamp(2.2rem,1.7rem+2.3vw,3.2rem); line-height:1.14; text-wrap:balance; margin-top:.6rem; }
+  .hero h1 em{ font-style:italic; color:var(--apricot-deep); }
+  .hero-lede{ margin-top:1.1rem; font-size:1.05rem; color:var(--ink-soft); max-width:36ch; }
+  .hero-facts{ margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .fact-chip{ font-size:.76rem; font-weight:700; border:1px solid var(--line); background:var(--white); padding:.32rem .68rem; border-radius:999px; color:var(--ink-soft); }
+  .hero-actions{ margin-top:1.6rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .hero-art{ background:var(--white); border-radius:10px; box-shadow:var(--shadow-2); padding:2rem; text-align:center; }
+  .hero-art svg{ width:150px; margin-inline:auto; }
+  .hero-art p{ margin-top:1rem; font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:1.05rem; }
+  .hero-art span{ display:block; margin-top:.3rem; font-size:.82rem; color:var(--ink-soft); }
+  .info-strip{ border-block:1px solid var(--line); background:var(--white); }
+  .info-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .info-item{ display:flex; align-items:flex-start; gap:.8rem; padding:1.5rem clamp(1rem,3vw,2rem); border-left:1px solid var(--line); }
+  .info-item:first-child{ border-left:none; }
+  .info-item svg{ width:1.3rem; height:1.3rem; color:var(--cacao); flex:none; margin-top:.15rem; }
+  .info-item .label{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .info-item .value{ font-weight:700; margin-top:.15rem; font-size:.94rem; }
+  .service-grid{ margin-top:2.2rem; display:grid; grid-template-columns:repeat(4,1fr); gap:1.1rem; }
+  .service-card{ background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1.4rem; box-shadow:var(--shadow-1); }
+  .service-card svg{ width:1.8rem; height:1.8rem; color:var(--apricot); }
+  .service-card h3{ margin-top:.9rem; font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:.98rem; }
+  .service-card p{ margin-top:.4rem; font-size:.84rem; color:var(--ink-soft); }
+  .cta-box{ margin-top:2.4rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--cacao); color:var(--white); border-radius:8px; padding:1.6rem 1.9rem; }
+  .cta-box p{ margin-top:.35rem; font-size:.88rem; color:rgba(255,255,255,.85); max-width:40ch; }
+  .cta-box strong{ display:block; font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:1.2rem; color:var(--white); }
+  .note-box{ margin-top:1.5rem; display:flex; gap:.8rem; align-items:flex-start; background:var(--cream-deep); border-radius:8px; padding:1.1rem 1.3rem; font-size:.85rem; color:var(--ink-soft); }
+  .note-box svg{ width:1.1rem; height:1.1rem; flex:none; margin-top:.15rem; color:var(--apricot-deep); }
+  .avis-card{ margin-top:2rem; background:var(--white); border:1px solid var(--line); border-radius:8px; padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
+  .avis-mark{ width:2.8rem; height:2.8rem; flex:none; }
+  .avis-text h3{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:1.3rem; }
+  .avis-text p{ margin-top:.6rem; max-width:44ch; font-size:.9rem; color:var(--ink-soft); }
+  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:32rem; }
+  .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
+  .find-map{ border-radius:8px; overflow:hidden; background:rgba(251,243,230,.06); border:1px solid rgba(251,243,230,.16); }
+  .find-address{ font-size:1.05rem; font-weight:700; margin-top:.5rem; }
+  .find-list{ margin-top:1.4rem; display:flex; flex-direction:column; gap:.8rem; }
+  .find-list li{ display:flex; gap:.7rem; align-items:flex-start; font-size:.9rem; color:rgba(251,243,230,.75); }
+  .find-list svg{ width:1.15rem; height:1.15rem; color:#F0B87F; flex:none; margin-top:.1rem; }
+  .find-actions{ margin-top:1.5rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+  footer{ background:var(--cacao-deep); color:rgba(251,243,230,.75); }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:2.4rem; padding-block:clamp(2.5rem,5vw,3.5rem); border-bottom:1px solid rgba(251,243,230,.14); }
+  footer .brand{ font-size:1.1rem; color:var(--cream); }
+  footer .brand span{ color:#F0B87F; }
+  footer .foot-tagline{ margin-top:.85rem; font-size:.87rem; max-width:26ch; }
+  footer h4{ font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--apricot); margin-bottom:.9rem; }
+  footer .foot-list{ display:flex; flex-direction:column; gap:.55rem; font-size:.87rem; } footer .foot-list a:hover{ color:var(--cream); }
+  .foot-bottom{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.2rem clamp(1.25rem,4vw,2.75rem); font-size:.75rem; color:rgba(251,243,230,.45); max-width:1120px; margin-inline:auto; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  @media (max-width:960px){
+    .nav-links{ display:none; } .burger{ display:block; } .nav-actions .btn-cacao{ display:none; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .info-grid{ grid-template-columns:repeat(2,1fr); } .info-item:nth-child(2){ border-left:none; }
+    .service-grid{ grid-template-columns:repeat(2,1fr); }
+    .avis-card{ flex-direction:column; align-items:flex-start; } .find-grid{ grid-template-columns:1fr; }
+    .footer-grid{ grid-template-columns:1fr; gap:2rem; }
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Les Délices <span>De La Roche</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos gourmandises</a>
+      <a href="#maison">La maison</a>
+      <a href="#avis">Avis</a>
+      <a href="#trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-cacao" href="tel:+33475853044">04 75 85 30 44</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos gourmandises</a>
+  <a href="#maison">La maison</a>
+  <a href="#avis">Avis</a>
+  <a href="#trouver">Nous trouver</a>
+  <a class="btn btn-cacao" href="tel:+33475853044">Appeler · 04 75 85 30 44</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Boulangerie · Pâtisserie · Chocolaterie — Bourg-lès-Valence</p>
+      <h1>Pains, pâtisseries <em>et gourmandises,</em> sous un même toit.</h1>
+      <p class="hero-lede">Boulangerie, pâtisserie, chocolaterie, confiserie, glacier et traiteur — avenue Jean Moulin.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">Pain & pâtisserie</span>
+        <span class="fact-chip">Chocolat & confiserie</span>
+        <span class="fact-chip">Avenue Jean Moulin</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-cacao" href="#produits">Nos gourmandises</a>
+        <a class="btn btn-line" href="#trouver">Nous trouver</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 160 150" fill="none">
+        <path d="M40 90c0-22 15-40 30-40s30 18 30 40c0 15-13 26-30 26s-30-11-30-26z" fill="var(--apricot)"/>
+        <path d="M70 50c0-8 5-15 10-15" stroke="var(--cacao)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <ellipse cx="90" cy="34" rx="8" ry="5" fill="#6E8C55" transform="rotate(30 90 34)"/>
+      </svg>
+      <p>Le comptoir gourmand</p>
+      <span>Bourg-lès-Valence, Drôme</span>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Ouverture</p><p class="value">Voir avec la boutique</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value">4 avenue Jean Moulin, Bourg-lès-Valence</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value">04 75 85 30 44</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M4 21V10l8-6 8 6v11" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/></svg>
+      <div><p class="label">Depuis</p><p class="value">2022</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos gourmandises</p>
+    <h2 class="section-title">Du pain aux confiseries, sous un même toit.</h2>
+    <p class="lede" style="margin-top:.9rem;">Une adresse qui réunit plusieurs savoir-faire, pour toutes les envies gourmandes.</p>
+    <div class="service-grid">
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 15c0-6 4-10 7-10s7 4 7 10-3 5-7 5-7 1-7-5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Boulangerie</h3>
+        <p>Pains façonnés chaque jour.</p>
+      </div>
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="1.2" opacity=".5"/></svg>
+        <h3>Pâtisserie</h3>
+        <p>Créations sucrées, pour toutes les occasions.</p>
+      </div>
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 20l8-16 8 16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11" cy="14" r="1.2" fill="currentColor"/></svg>
+        <h3>Chocolaterie & confiserie</h3>
+        <p>Chocolats et confiseries à offrir ou à savourer.</p>
+      </div>
+      <div class="service-card">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4M8 5l2 2M16 5l-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 14a5 5 0 0110 0c0 3-2 7-5 7s-5-4-5-7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <h3>Glacier & traiteur</h3>
+        <p>Glaces artisanales et service traiteur.</p>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16.2v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Horaires non communiqués en ligne — le plus sûr reste d'appeler le <a href="tel:+33475853044" style="font-weight:700;color:var(--ink);">04 75 85 30 44</a> avant de vous déplacer.</span>
+    </div>
+
+    <div class="cta-box">
+      <div>
+        <strong>Une envie de pain frais ou de chocolat ?</strong>
+        <p>Passez avenue Jean Moulin ou appelez pour vérifier les horaires.</p>
+      </div>
+      <a class="btn btn-apricot" href="tel:+33475853044">Appeler · 04 75 85 30 44</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="maison" style="background:var(--white);">
+  <div class="container">
+    <p class="eyebrow">La maison</p>
+    <h2 class="section-title">Une adresse gourmande, avenue Jean Moulin.</h2>
+    <p class="lede" style="margin-top:1rem;">Ouverte en 2022 à Bourg-lès-Valence, Les Délices De La Roche réunit boulangerie, pâtisserie, chocolaterie, confiserie, glacier et traiteur — une adresse de quartier, loin des enseignes standardisées.</p>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Soyez parmi les premiers à en parler.</h2>
+    <div class="avis-card">
+      <div class="avis-left">
+        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
+        <div class="avis-text">
+          <h3>Pas encore d'avis en ligne.</h3>
+          <p>Plutôt que d'inventer des témoignages, on préfère l'admettre : les avis Google sont encore à écrire. Le vôtre pourrait être l'un des premiers.</p>
+        </div>
+      </div>
+      <a class="btn btn-cacao" href="https://www.google.com/maps/search/?api=1&query=Les+D%C3%A9lices+De+La+Roche+4+avenue+Jean+Moulin+26500+Bourg-l%C3%A8s-Valence" target="_blank" rel="noopener">Laisser un avis sur Google</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-cacao" id="trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title" style="color:var(--cream);">Avenue Jean Moulin, à Bourg-lès-Valence.</h2>
+      <p class="find-address" style="color:var(--cream);">4 avenue Jean Moulin, 26500 Bourg-lès-Valence</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>04 75 85 30 44 — pour vérifier avant de vous déplacer.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Commerce récent — pas d'horaires en ligne officiels pour l'instant.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-apricot" href="https://www.google.com/maps/search/?api=1&query=Les+D%C3%A9lices+De+La+Roche+4+avenue+Jean+Moulin+26500+Bourg-l%C3%A8s-Valence" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" style="border-color:rgba(251,243,230,.4); color:var(--cream);" href="tel:+33475853044">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="rgba(251,243,230,.22)" stroke-width="1.4">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+        </g>
+        <path d="M140 130c0-18 12-32 30-32s30 14 30 32c0 12-10 21-30 21s-30-9-30-21z" fill="var(--apricot)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Les Délices <span>De La Roche</span></a>
+      <p class="foot-tagline">Boulangerie, pâtisserie et chocolaterie à Bourg-lès-Valence.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33475853044">04 75 85 30 44</a>
+        <span>4 avenue Jean Moulin, 26500 Bourg-lès-Valence</span>
+      </div>
+    </div>
+    <div>
+      <h4>À savoir</h4>
+      <div class="foot-list">
+        <span>Pain, pâtisserie, chocolat, glaces</span>
+        <span>Horaires précis : nous appeler</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Les Délices De La Roche</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll(); window.addEventListener('scroll', onScroll, { passive:true });
+  var statusNav = document.getElementById('statusNav');
+  if(statusNav) statusNav.textContent = 'Appeler pour horaires';
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){ document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); });
+  });
+})();
+</script>
