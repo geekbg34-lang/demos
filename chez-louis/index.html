@@ -166,11 +166,20 @@
   .order-step p{ margin-top:.4rem; font-size:.87rem; color:var(--ink-soft); }
 
   /* ---------- AVIS ---------- */
-  .avis-card{ margin-top:2rem; background:var(--charcoal); color:var(--paper); border-radius:8px; padding:clamp(1.75rem,4vw,2.75rem); display:flex; flex-wrap:wrap; align-items:center; gap:2rem; justify-content:space-between; }
-  .avis-mark{ width:3rem; height:3rem; flex:none; }
-  .avis-text h3{ font-family:"Fraunces",Georgia,serif; font-weight:500; font-style:italic; font-size:1.5rem; }
-  .avis-text p{ margin-top:.6rem; max-width:46ch; font-size:.92rem; color:rgba(243,239,222,.68); }
-  .avis-left{ display:flex; gap:1.2rem; align-items:flex-start; max-width:34rem; }
+  .avis-summary{ margin-top:1.6rem; display:flex; align-items:center; gap:1.1rem; flex-wrap:wrap; }
+  .avis-score{ font-family:"Fraunces",Georgia,serif; font-style:italic; font-weight:500; font-size:2.6rem; color:var(--amber-deep); line-height:1; }
+  .avis-stars{ color:var(--amber); font-size:1.05rem; letter-spacing:.12em; }
+  .avis-count{ margin-top:.15rem; font-size:.86rem; color:var(--ink-soft); }
+  .avis-grid{ margin-top:1.8rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+  .avis-item{ background:var(--paper); border:1px solid var(--paper-line); border-radius:8px; padding:1.4rem 1.5rem; display:flex; flex-direction:column; gap:.75rem; box-shadow:var(--shadow-1); }
+  .avis-item .stars{ color:var(--amber); font-size:.82rem; letter-spacing:.14em; }
+  .avis-item blockquote{ font-size:.92rem; line-height:1.55; color:var(--ink); }
+  .avis-item .who{ margin-top:auto; display:flex; justify-content:space-between; align-items:baseline; gap:.6rem; font-size:.8rem; }
+  .avis-item .who strong{ color:var(--ink); font-weight:700; }
+  .avis-item .who span{ color:var(--ink-soft); white-space:nowrap; }
+  .avis-cta{ margin-top:2.2rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem; background:var(--charcoal); color:var(--paper); border-radius:8px; padding:1.5rem 1.8rem; }
+  .avis-cta p{ margin-top:.35rem; font-size:.86rem; color:rgba(243,239,222,.68); max-width:42ch; }
+  .avis-cta strong{ display:block; font-family:"Fraunces",Georgia,serif; font-style:italic; font-weight:500; font-size:1.15rem; color:var(--paper); }
 
   /* ---------- NOUS TROUVER ---------- */
   .find-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); align-items:center; margin-top:2rem; }
@@ -204,7 +213,8 @@
     .trace::before{ display:none; }
     .menu-row{ flex-direction:column; align-items:flex-start; gap:.2rem; }
     .order-steps{ grid-template-columns:1fr; }
-    .avis-card{ flex-direction:column; align-items:flex-start; }
+    .avis-grid{ grid-template-columns:1fr; }
+    .avis-cta{ flex-direction:column; align-items:flex-start; }
     .find-grid{ grid-template-columns:1fr; }
     .footer-grid{ grid-template-columns:1fr; gap:2rem; }
     .gallery{ grid-template-columns:1fr 1fr; }
@@ -425,16 +435,37 @@
 <section class="section section-deep" id="avis">
   <div class="container">
     <p class="eyebrow">Avis</p>
-    <h2 class="section-title">L'avis de vrais clients, pas le nôtre.</h2>
-    <div class="avis-card">
-      <div class="avis-left">
-        <svg class="avis-mark" viewBox="0 0 40 40"><circle cx="12" cy="12" r="6" fill="#4E8CFF"/><circle cx="28" cy="12" r="6" fill="#E4574A"/><circle cx="12" cy="28" r="6" fill="#F2B632"/><circle cx="28" cy="28" r="6" fill="#4C9F5C"/></svg>
-        <div class="avis-text">
-          <h3>Les avis se lisent sur Google.</h3>
-          <p>Plutôt que d'inventer des témoignages, on vous emmène directement voir les vrais avis laissés sur la fiche Google de Chez Louis — et vous pouvez y déposer le vôtre en sortant du fournil.</p>
-        </div>
+    <h2 class="section-title">Ce que disent nos clients.</h2>
+    <div class="avis-summary">
+      <span class="avis-score">3,8</span>
+      <div>
+        <div class="avis-stars" aria-hidden="true">★★★★☆</div>
+        <p class="avis-count">470 avis Google</p>
       </div>
-      <a class="btn btn-amber" href="https://www.google.com/maps/search/?api=1&query=Chez+Louis+Boulangerie+65+route+de+Genas+69100+Villeurbanne" target="_blank" rel="noopener">Voir les avis sur Google</a>
+    </div>
+    <div class="avis-grid">
+      <div class="avis-item">
+        <div class="stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« L'accueil et le service ont été super ! Merci à la vendeuse qui a pris le temps de tout nous découper et qui a été très accueillante. Nous recommandons ! »</blockquote>
+        <div class="who"><strong>Chloé Q.</strong><span>il y a 2 mois</span></div>
+      </div>
+      <div class="avis-item">
+        <div class="stars" aria-hidden="true">★★★★☆</div>
+        <blockquote>« Le pain est excellent, surtout le sarrasin. Le magasin est coquet avec sa petite terrasse où il est bon de boire son petit café. On est accueilli avec le sourire. »</blockquote>
+        <div class="who"><strong>Evelyne T. · Local Guide</strong><span>il y a 2 mois</span></div>
+      </div>
+      <div class="avis-item">
+        <div class="stars" aria-hidden="true">★★★★☆</div>
+        <blockquote>« Superbe boulangerie. Les horaires sont arrangeants, les vendeuses toujours au top, super gentilles et agréables ! Je recommande les pains, sandwichs et viennoiseries les yeux fermés. »</blockquote>
+        <div class="who"><strong>clownessy</strong><span>il y a 3 mois</span></div>
+      </div>
+    </div>
+    <div class="avis-cta">
+      <div>
+        <strong>Une sélection parmi 470 avis, tous vérifiables.</strong>
+        <p>Rien n'est inventé ici — cliquez pour voir l'intégralité des avis sur la fiche Google de Chez Louis, y compris les plus critiques.</p>
+      </div>
+      <a class="btn btn-amber" href="https://www.google.com/maps/search/?api=1&query=Chez+Louis+Boulangerie+65+route+de+Genas+69100+Villeurbanne" target="_blank" rel="noopener">Voir tous les avis</a>
     </div>
   </div>
 </section>
