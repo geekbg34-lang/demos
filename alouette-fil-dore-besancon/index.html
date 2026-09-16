@@ -1,0 +1,456 @@
+<title>Alouette et Fil Doré</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EAD9;
+    --paper-deep:#E4D8BC;
+    --paper-line: rgba(46,42,31,.14);
+    --ink:#2E2A1F;
+    --ink-soft:#736B54;
+    --terracotta:#C1663B;
+    --terracotta-deep:#93481F;
+    --terracotta-pale:#F0CDB0;
+    --sage:#6B7A4F;
+    --sage-pale:#DCE3C6;
+    --charcoal:#241F16;
+    --charcoal-line: rgba(241,234,217,.16);
+    --status-open:#4F8F5B;
+    --shadow-1: 0 1px 2px rgba(36,31,22,.1), 0 8px 20px -12px rgba(36,31,22,.3);
+    --shadow-2: 0 6px 16px rgba(36,31,22,.16), 0 24px 44px -20px rgba(36,31,22,.42);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p,blockquote{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--terracotta);outline-offset:3px;border-radius:2px;}
+
+  .container{max-width:1120px;margin-inline:auto;padding-inline:clamp(1.25rem,4vw,2.75rem);}
+  .section{padding-block:clamp(3.25rem,6vw,5.5rem);}
+  .section-deep{background:var(--paper-deep);}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--terracotta-deep);}
+  h2.section-title{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(1.85rem,1.4rem+1.9vw,2.5rem);text-wrap:balance;margin-top:.4rem;}
+  .lede{max-width:58ch;font-size:1.02rem;color:var(--ink-soft);}
+
+  .nav{position:sticky;top:0;z-index:50;transition:background-color .25s ease,box-shadow .25s ease;}
+  .nav.scrolled{background:rgba(241,234,217,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--paper-line);}
+  .nav-inner{max-width:1120px;margin-inline:auto;padding:1.05rem clamp(1.25rem,4vw,2.75rem);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;}
+  .brand{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:1.28rem;white-space:nowrap;}
+  .brand span{color:var(--terracotta-deep);}
+  .nav-links{display:flex;gap:1.7rem;}
+  .nav-links a{font-size:.88rem;font-weight:600;color:var(--ink-soft);position:relative;padding-bottom:.2rem;}
+  .nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--terracotta);transition:right .22s ease;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{right:0;}
+  .nav-actions{display:flex;align-items:center;gap:.9rem;}
+  .status-pill{display:flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:700;border:1px solid var(--paper-line);padding:.35rem .7rem;border-radius:999px;white-space:nowrap;}
+  .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--terracotta);flex:none;}
+  .dot.is-open{background:var(--status-open);box-shadow:0 0 0 3px rgba(79,143,91,.22);}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.68rem 1.3rem;border-radius:3px;font-size:.86rem;font-weight:700;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background-color .15s ease,color .15s ease,border-color .15s ease;}
+  .btn-terra{background:var(--terracotta);color:var(--paper);}
+  .btn-terra:hover{background:var(--terracotta-deep);transform:translateY(-1px);box-shadow:var(--shadow-1);}
+  .btn-line{border:1px solid var(--ink);color:var(--ink);}
+  .btn-line:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+  .btn-charcoal{background:var(--charcoal);color:var(--paper);}
+  .btn-charcoal:hover{background:#332C1F;transform:translateY(-1px);}
+
+  .burger{display:none;width:2.1rem;height:2.1rem;position:relative;}
+  .burger span{position:absolute;left:.15rem;right:.15rem;height:2px;background:var(--ink);transition:transform .25s ease,opacity .25s ease;}
+  .burger span:nth-child(1){top:.6rem;} .burger span:nth-child(2){top:1.05rem;} .burger span:nth-child(3){top:1.5rem;}
+  body.menu-open .burger span:nth-child(1){transform:translateY(.45rem) rotate(45deg);}
+  body.menu-open .burger span:nth-child(2){opacity:0;}
+  body.menu-open .burger span:nth-child(3){transform:translateY(-.45rem) rotate(-45deg);}
+  .mobile-menu{position:fixed;inset:0;z-index:49;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease,visibility .25s ease;}
+  body.menu-open .mobile-menu{opacity:1;visibility:visible;transform:translateY(0);}
+  .mobile-menu a{font-family:"DM Serif Display",Georgia,serif;font-size:1.6rem;}
+  .mobile-menu a:hover{color:var(--terracotta-deep);}
+
+  .hero-inner{max-width:1120px;margin-inline:auto;padding:clamp(2rem,5vw,3.5rem) clamp(1.25rem,4vw,2.75rem) clamp(3.25rem,7vw,5rem);display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,4vw,3.5rem);align-items:start;}
+  .hero h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(2.15rem,1.6rem+2.6vw,3.4rem);line-height:1.1;text-wrap:balance;margin-top:.6rem;}
+  .hero h1 em{color:var(--terracotta-deep);font-style:italic;}
+  .hero-lede{margin-top:1.2rem;font-size:1.06rem;color:var(--ink-soft);max-width:46ch;}
+  .hero-facts{margin-top:1.3rem;display:flex;flex-wrap:wrap;gap:.5rem;}
+  .fact-chip{font-size:.76rem;font-weight:700;border:1px solid var(--paper-line);background:var(--paper-deep);padding:.32rem .65rem;border-radius:999px;color:var(--ink-soft);}
+  .hero-actions{margin-top:1.7rem;display:flex;gap:.9rem;flex-wrap:wrap;}
+
+  .block-card{background:var(--charcoal);color:var(--paper);border-radius:6px;padding:1.5rem 1.6rem;box-shadow:var(--shadow-2);position:relative;overflow:hidden;}
+  .block-card::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background:radial-gradient(130px 100px at 88% -10%, rgba(193,102,59,.4), transparent 70%);}
+  .block-eyebrow{display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terracotta-pale);position:relative;}
+  .block-icon{width:1.15rem;height:1.15rem;color:var(--terracotta-pale);flex:none;}
+  .block-headline{font-family:"DM Serif Display",Georgia,serif;font-size:1.35rem;font-weight:400;margin-top:.7rem;line-height:1.25;position:relative;}
+  .block-sub{margin-top:.5rem;font-size:.86rem;color:rgba(241,234,217,.62);position:relative;}
+
+  .info-strip{border-block:1px solid var(--paper-line);}
+  .info-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+  .info-item{display:flex;align-items:flex-start;gap:.8rem;padding:1.5rem clamp(1rem,3vw,2rem);border-left:1px solid var(--paper-line);}
+  .info-item:first-child{border-left:none;}
+  .info-item svg{width:1.35rem;height:1.35rem;color:var(--terracotta-deep);flex:none;margin-top:.15rem;}
+  .info-item .label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);}
+  .info-item .value{font-weight:700;margin-top:.15rem;font-size:.95rem;}
+  .info-item .value.small{font-weight:600;}
+
+  .badge-row{margin-top:1.8rem;display:flex;flex-wrap:wrap;gap:.7rem;}
+  .badge{display:flex;align-items:center;gap:.55rem;background:var(--sage-pale);color:#33461F;border-radius:999px;padding:.5rem .9rem .5rem .7rem;font-size:.85rem;font-weight:700;}
+  .badge svg{width:1.15rem;height:1.15rem;color:var(--sage);flex:none;}
+  .badge.terra{background:var(--terracotta-pale);color:#5C2C10;}
+  .badge.terra svg{color:var(--terracotta-deep);}
+
+  .hours-table{margin-top:2.2rem;border:1px solid var(--paper-line);border-radius:8px;overflow:hidden;background:var(--paper);max-width:32rem;}
+  .hours-row{display:flex;justify-content:space-between;padding:.75rem 1.2rem;font-size:.92rem;border-bottom:1px solid var(--paper-line);}
+  .hours-row:last-child{border-bottom:none;}
+  .hours-row.today{background:var(--terracotta-pale);font-weight:700;}
+  .hours-day{color:var(--ink-soft);}
+  .hours-row.today .hours-day{color:var(--ink);}
+  .hours-closed{color:var(--ink-soft);font-style:italic;}
+
+  .avis-summary{display:flex;align-items:baseline;gap:.9rem;margin-top:1.3rem;flex-wrap:wrap;}
+  .avis-score{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:2.4rem;color:var(--terracotta-deep);}
+  .avis-stars{color:var(--terracotta);font-size:1.15rem;letter-spacing:.12em;}
+  .avis-count{font-size:.9rem;color:var(--ink-soft);}
+  .avis-grid{margin-top:1.8rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;}
+  .avis-item{background:var(--charcoal);color:var(--paper);border-radius:8px;padding:1.5rem;display:flex;flex-direction:column;gap:.8rem;}
+  .avis-item .avis-stars{color:var(--terracotta);font-size:.95rem;}
+  .avis-item blockquote{font-family:"DM Serif Display",Georgia,serif;font-style:italic;font-size:1.02rem;line-height:1.5;}
+  .avis-item .avis-who{font-size:.82rem;color:rgba(241,234,217,.62);}
+  .avis-cta{margin-top:1.5rem;padding:1.1rem 1.3rem;border:1px dashed var(--paper-line);border-radius:8px;background:var(--paper-deep);}
+  .avis-cta p{font-size:.88rem;color:var(--ink-soft);}
+  .avis-cta a{font-weight:700;color:var(--terracotta-deep);text-decoration:underline;}
+
+  .find-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center;margin-top:2rem;}
+  .find-map{border:1px solid var(--paper-line);border-radius:6px;overflow:hidden;background:var(--paper-deep);}
+  .find-address{font-size:1.1rem;font-weight:700;margin-top:.5rem;}
+  .find-list{margin-top:1.5rem;display:flex;flex-direction:column;gap:.85rem;}
+  .find-list li{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);}
+  .find-list svg{width:1.2rem;height:1.2rem;color:var(--terracotta-deep);flex:none;margin-top:.1rem;}
+  .find-actions{margin-top:1.6rem;display:flex;gap:.8rem;flex-wrap:wrap;}
+
+  footer{background:var(--charcoal);color:rgba(241,234,217,.75);}
+  .footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:2.4rem;padding-block:clamp(2.5rem,5vw,3.5rem);border-bottom:1px solid var(--charcoal-line);}
+  footer .brand{font-size:1.28rem;color:var(--paper);}
+  footer .foot-tagline{margin-top:.85rem;font-size:.88rem;max-width:28ch;}
+  footer h4{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--terracotta-pale);margin-bottom:.9rem;}
+  footer .foot-list{display:flex;flex-direction:column;gap:.55rem;font-size:.88rem;}
+  footer .foot-list a:hover{color:var(--paper);}
+  .foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;padding:1.2rem clamp(1.25rem,4vw,2.75rem);font-size:.76rem;color:rgba(241,234,217,.48);max-width:1120px;margin-inline:auto;}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+  @media (max-width:960px){
+    .nav-links{display:none;}
+    .burger{display:block;}
+    .nav-actions .btn-terra{display:none;}
+    .hero-inner{grid-template-columns:1fr;}
+    .info-grid{grid-template-columns:repeat(2,1fr);}
+    .info-item:nth-child(2){border-left:none;}
+    .avis-grid{grid-template-columns:1fr;}
+    .find-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr;gap:2rem;}
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Alouette <span>&amp; Fil Doré</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos produits</a>
+      <a href="#horaires">Horaires</a>
+      <a href="#avis">Avis</a>
+      <a href="#nous-trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-terra" href="tel:+33953279299">09 53 27 92 99</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos produits</a>
+  <a href="#horaires">Horaires</a>
+  <a href="#avis">Avis</a>
+  <a href="#nous-trouver">Nous trouver</a>
+  <a class="btn btn-terra" href="tel:+33953279299">Appeler · 09 53 27 92 99</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Mercerie — Besançon, rue Battant</p>
+      <h1>La mercerie qu'on <em>recommande à 100 %.</em></h1>
+      <p class="hero-lede">Laines françaises et naturelles, fils à broder DMC, mercerie complète et ateliers pour apprendre le crochet, le tricot ou la broderie — rue Battant, dans le quartier le plus vivant de Besançon.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">5★ Google — 10 avis</span>
+        <span class="fact-chip">Laines naturelles</span>
+        <span class="fact-chip">Ateliers crochet &amp; tricot</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-terra" href="#horaires">Voir les horaires</a>
+        <a class="btn btn-line" href="tel:+33953279299">Appeler la boutique</a>
+      </div>
+    </div>
+    <div class="block-card">
+      <div class="block-eyebrow">
+        <svg class="block-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="14" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M9 9c2 2 2 8 0 10M6 11c2 1.5 2 5.5 0 7M12 11c-2 1.5-2 5.5 0 7" stroke="currentColor" stroke-width="1.2"/><path d="M16 6l5 13M18.5 8l-2 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Ateliers
+      </div>
+      <p class="block-headline">Crochet, tricot, broderie</p>
+      <p class="block-sub">Sessions de 2 heures pour apprendre en petit groupe — agenda mis à jour sur Instagram.</p>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value small">12 rue Battant, 25000 Besançon</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value small">09 53 27 92 99</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="14" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M9 9c2 2 2 8 0 10" stroke="currentColor" stroke-width="1.2"/></svg>
+      <div><p class="label">Spécialité</p><p class="value small">Laines naturelles</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos produits</p>
+    <h2 class="section-title">Laines, fils à broder, et toute la mercerie.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Laines FONTY (France), Adriafil (Italie), Lana Grossa Filati (Allemagne) et Hoooked (Portugal), avec une préférence pour les fibres naturelles ; fils à broder DMC et kits broderie ; boutons, biais, attaches, aiguilles — et une petite librairie d'ouvrages pour les arts du fil.</p>
+    <div class="badge-row">
+      <span class="badge terra">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="14" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M9 9c2 2 2 8 0 10" stroke="currentColor" stroke-width="1.2"/></svg>
+        Laines &amp; fils naturels
+      </span>
+      <span class="badge terra">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 8h16M4 16h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Mercerie complète
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Librairie arts du fil
+      </span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="horaires">
+  <div class="container">
+    <p class="eyebrow">Horaires</p>
+    <h2 class="section-title">Ouvert du mardi au dimanche matin.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Fermé le lundi — dimanche en matinée uniquement.</p>
+    <div class="hours-table" id="hoursTable"></div>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Ce que disent les clientes, sur Google.</h2>
+    <div class="avis-summary">
+      <span class="avis-score">5,0</span>
+      <span class="avis-stars" aria-hidden="true">★★★★★</span>
+      <span class="avis-count">10 avis Google</span>
+    </div>
+    <div class="avis-grid">
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« Une petite boutique toute mimi. J'y trouve de la pure laine de qualité et de fabrication française... la responsable est de très bon conseil. »</blockquote>
+        <p class="avis-who">Aurore HUOT — avis Google</p>
+      </div>
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« Toujours bien accueillie, toujours de bons conseils. Petite boutique très charmante avec beaucoup de produits ! Je recommande à 100%. »</blockquote>
+        <p class="avis-who">Alice Galmiche — avis Google</p>
+      </div>
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« Très belle petite mercerie. La dame est très accueillante et à l'écoute de nos demandes. Merci pour tout ! »</blockquote>
+        <p class="avis-who">Pauline Berlemont — avis Google</p>
+      </div>
+    </div>
+    <div class="avis-cta">
+      <p>10 avis, tous 5 étoiles, tous vérifiables. <a href="https://www.google.com/maps/search/?api=1&query=Alouette+et+Fil+Dore+12+rue+Battant+25000+Besancon" target="_blank" rel="noopener">Voir tous les avis sur Google Maps →</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="nous-trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Rue Battant.</h2>
+      <p class="find-address">12 rue Battant, 25000 Besançon</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="14" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M9 9c2 2 2 8 0 10" stroke="currentColor" stroke-width="1.2"/></svg>
+          <span>Laines, fils à broder et mercerie complète en boutique.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Ouvert du mardi au dimanche matin, fermé le lundi.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-charcoal" href="https://www.google.com/maps/search/?api=1&query=Alouette+et+Fil+Dore+12+rue+Battant+25000+Besancon" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33953279299">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <g transform="translate(170,112)">
+          <circle r="34" fill="none" stroke="var(--terracotta)" stroke-width="3"/>
+          <path d="M-16 -20c8 8 8 44 0 52M2 -24c8 8 8 48 0 56M-30 -6c8 4 8 24 0 28" stroke="var(--terracotta-deep)" stroke-width="1.3" fill="none"/>
+          <path d="M28 -34l14 40M40 -30l-4 3" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Alouette <span>&amp; Fil Doré</span></a>
+      <p class="foot-tagline">Mercerie, laines naturelles et ateliers, rue Battant à Besançon.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33953279299">09 53 27 92 99</a>
+        <span>12 rue Battant, 25000 Besançon</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Mar–Jeu&nbsp; 13h–19h · Ven–Sam&nbsp; 10h–19h</span>
+        <span>Dim&nbsp; 9h30–12h30 · Lun&nbsp; Fermé</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Alouette et Fil Doré</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:{open:['09:30','12:30']},
+    1:null,
+    2:{open:['13:00','19:00']},
+    3:{open:['13:00','19:00']},
+    4:{open:['13:00','19:00']},
+    5:{open:['10:00','19:00']},
+    6:{open:['10:00','19:00']}
+  };
+  var dayNames = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+
+  function blocksFor(sched){
+    if(!sched) return [];
+    return [sched.open];
+  }
+
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    var blocks = blocksFor(today);
+    for(var b=0;b<blocks.length;b++){
+      var openMin = toMinutes(blocks[b][0]), closeMin = toMinutes(blocks[b][1]);
+      if(minutes >= openMin && minutes < closeMin){
+        return { open:true, text:'Ouvert — ferme à ' + fmt(blocks[b][1]) };
+      }
+    }
+    for(var b2=0;b2<blocks.length;b2++){
+      var oMin = toMinutes(blocks[b2][0]);
+      if(minutes < oMin){
+        return { open:false, text:'Fermé — ouvre à ' + fmt(blocks[b2][0]) };
+      }
+    }
+    for(var i=1;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      var nb = blocksFor(sched);
+      if(!nb.length) continue;
+      var label = i===1 ? 'demain' : dayNames[d].toLowerCase();
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(nb[0][0]) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+
+  function renderHours(){
+    var table = document.getElementById('hoursTable');
+    var now = new Date();
+    var todayIdx = now.getDay();
+    var order = [1,2,3,4,5,6,0];
+    var html = '';
+    order.forEach(function(d){
+      var sched = schedule[d];
+      var isToday = d === todayIdx;
+      html += '<div class="hours-row' + (isToday?' today':'') + '"><span class="hours-day">' + dayNames[d] + '</span>';
+      if(sched){
+        var blocks = blocksFor(sched);
+        var text = blocks.map(function(b){ return fmt(b[0]) + ' – ' + fmt(b[1]); }).join(' / ');
+        html += '<span>' + text + '</span></div>';
+      } else {
+        html += '<span class="hours-closed">Fermé</span></div>';
+      }
+    });
+    table.innerHTML = html;
+  }
+
+  function apply(){
+    var now = new Date();
+    var status = getStatus(now);
+    var dotNav = document.getElementById('dotNav');
+    if(dotNav) dotNav.classList.toggle('is-open', status.open);
+    var statusNav = document.getElementById('statusNav');
+    if(statusNav) statusNav.textContent = status.text;
+    var infoHours = document.getElementById('infoHours');
+    if(infoHours) infoHours.textContent = status.text;
+  }
+  apply();
+  renderHours();
+  setInterval(apply, 30000);
+
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
