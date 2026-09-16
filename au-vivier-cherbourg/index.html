@@ -1,0 +1,456 @@
+<title>Au Vivier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFEDE4;
+    --paper-deep:#E2DFD1;
+    --paper-line: rgba(20,40,36,.13);
+    --ink:#1E2A28;
+    --ink-soft:#5C6B67;
+    --teal:#2B6E68;
+    --teal-deep:#1E4F4A;
+    --teal-pale:#CFE3DF;
+    --copper:#B4652F;
+    --copper-deep:#8C4A1F;
+    --copper-pale:#EFD6BC;
+    --charcoal:#152220;
+    --charcoal-line: rgba(239,237,228,.16);
+    --status-open:#4F8F5B;
+    --shadow-1: 0 1px 2px rgba(21,34,32,.1), 0 8px 20px -12px rgba(21,34,32,.3);
+    --shadow-2: 0 6px 16px rgba(21,34,32,.16), 0 24px 44px -20px rgba(21,34,32,.42);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Archivo",ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  img,svg{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,p,blockquote{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:2px;}
+
+  .container{max-width:1120px;margin-inline:auto;padding-inline:clamp(1.25rem,4vw,2.75rem);}
+  .section{padding-block:clamp(3.25rem,6vw,5.5rem);}
+  .section-deep{background:var(--paper-deep);}
+  .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-deep);}
+  h2.section-title{font-family:"Frank Ruhl Libre",Georgia,serif;font-weight:700;font-size:clamp(1.85rem,1.4rem+1.9vw,2.5rem);text-wrap:balance;margin-top:.4rem;}
+  .lede{max-width:58ch;font-size:1.02rem;color:var(--ink-soft);}
+
+  .nav{position:sticky;top:0;z-index:50;transition:background-color .25s ease,box-shadow .25s ease;}
+  .nav.scrolled{background:rgba(239,237,228,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--paper-line);}
+  .nav-inner{max-width:1120px;margin-inline:auto;padding:1.05rem clamp(1.25rem,4vw,2.75rem);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;}
+  .brand{font-family:"Frank Ruhl Libre",Georgia,serif;font-weight:700;font-size:1.3rem;white-space:nowrap;}
+  .brand span{color:var(--teal-deep);}
+  .nav-links{display:flex;gap:1.7rem;}
+  .nav-links a{font-size:.88rem;font-weight:600;color:var(--ink-soft);position:relative;padding-bottom:.2rem;}
+  .nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--teal);transition:right .22s ease;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{right:0;}
+  .nav-actions{display:flex;align-items:center;gap:.9rem;}
+  .status-pill{display:flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:700;border:1px solid var(--paper-line);padding:.35rem .7rem;border-radius:999px;white-space:nowrap;}
+  .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--teal);flex:none;}
+  .dot.is-open{background:var(--status-open);box-shadow:0 0 0 3px rgba(79,143,91,.22);}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.68rem 1.3rem;border-radius:3px;font-size:.86rem;font-weight:700;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background-color .15s ease,color .15s ease,border-color .15s ease;}
+  .btn-teal{background:var(--teal);color:var(--paper);}
+  .btn-teal:hover{background:var(--teal-deep);transform:translateY(-1px);box-shadow:var(--shadow-1);}
+  .btn-line{border:1px solid var(--ink);color:var(--ink);}
+  .btn-line:hover{border-color:var(--teal);color:var(--teal-deep);}
+  .btn-charcoal{background:var(--charcoal);color:var(--paper);}
+  .btn-charcoal:hover{background:#1F332F;transform:translateY(-1px);}
+
+  .burger{display:none;width:2.1rem;height:2.1rem;position:relative;}
+  .burger span{position:absolute;left:.15rem;right:.15rem;height:2px;background:var(--ink);transition:transform .25s ease,opacity .25s ease;}
+  .burger span:nth-child(1){top:.6rem;} .burger span:nth-child(2){top:1.05rem;} .burger span:nth-child(3){top:1.5rem;}
+  body.menu-open .burger span:nth-child(1){transform:translateY(.45rem) rotate(45deg);}
+  body.menu-open .burger span:nth-child(2){opacity:0;}
+  body.menu-open .burger span:nth-child(3){transform:translateY(-.45rem) rotate(-45deg);}
+  .mobile-menu{position:fixed;inset:0;z-index:49;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s ease,transform .25s ease,visibility .25s ease;}
+  body.menu-open .mobile-menu{opacity:1;visibility:visible;transform:translateY(0);}
+  .mobile-menu a{font-family:"Frank Ruhl Libre",Georgia,serif;font-size:1.6rem;font-weight:700;}
+  .mobile-menu a:hover{color:var(--teal-deep);}
+
+  .hero-inner{max-width:1120px;margin-inline:auto;padding:clamp(2rem,5vw,3.5rem) clamp(1.25rem,4vw,2.75rem) clamp(3.25rem,7vw,5rem);display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,4vw,3.5rem);align-items:start;}
+  .hero h1{font-family:"Frank Ruhl Libre",Georgia,serif;font-weight:700;font-size:clamp(2.15rem,1.6rem+2.6vw,3.4rem);line-height:1.1;text-wrap:balance;margin-top:.6rem;}
+  .hero h1 em{color:var(--teal-deep);font-style:italic;}
+  .hero-lede{margin-top:1.2rem;font-size:1.06rem;color:var(--ink-soft);max-width:46ch;}
+  .hero-facts{margin-top:1.3rem;display:flex;flex-wrap:wrap;gap:.5rem;}
+  .fact-chip{font-size:.76rem;font-weight:700;border:1px solid var(--paper-line);background:var(--paper-deep);padding:.32rem .65rem;border-radius:999px;color:var(--ink-soft);}
+  .hero-actions{margin-top:1.7rem;display:flex;gap:.9rem;flex-wrap:wrap;}
+
+  .block-card{background:var(--charcoal);color:var(--paper);border-radius:6px;padding:1.5rem 1.6rem;box-shadow:var(--shadow-2);position:relative;overflow:hidden;}
+  .block-card::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background:radial-gradient(130px 100px at 88% -10%, rgba(43,110,104,.4), transparent 70%);}
+  .block-eyebrow{display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-pale);position:relative;}
+  .block-icon{width:1.15rem;height:1.15rem;color:var(--teal-pale);flex:none;}
+  .block-headline{font-family:"Frank Ruhl Libre",Georgia,serif;font-size:1.35rem;font-weight:700;margin-top:.7rem;line-height:1.25;position:relative;}
+  .block-sub{margin-top:.5rem;font-size:.86rem;color:rgba(239,237,228,.62);position:relative;}
+
+  .info-strip{border-block:1px solid var(--paper-line);}
+  .info-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+  .info-item{display:flex;align-items:flex-start;gap:.8rem;padding:1.5rem clamp(1rem,3vw,2rem);border-left:1px solid var(--paper-line);}
+  .info-item:first-child{border-left:none;}
+  .info-item svg{width:1.35rem;height:1.35rem;color:var(--teal-deep);flex:none;margin-top:.15rem;}
+  .info-item .label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);}
+  .info-item .value{font-weight:700;margin-top:.15rem;font-size:.95rem;}
+  .info-item .value.small{font-weight:600;}
+
+  .badge-row{margin-top:1.8rem;display:flex;flex-wrap:wrap;gap:.7rem;}
+  .badge{display:flex;align-items:center;gap:.55rem;background:var(--copper-pale);color:#5C3416;border-radius:999px;padding:.5rem .9rem .5rem .7rem;font-size:.85rem;font-weight:700;}
+  .badge svg{width:1.15rem;height:1.15rem;color:var(--copper);flex:none;}
+  .badge.teal{background:var(--teal-pale);color:#173F3A;}
+  .badge.teal svg{color:var(--teal-deep);}
+
+  .hours-table{margin-top:2.2rem;border:1px solid var(--paper-line);border-radius:8px;overflow:hidden;background:var(--paper);max-width:32rem;}
+  .hours-row{display:flex;justify-content:space-between;padding:.75rem 1.2rem;font-size:.92rem;border-bottom:1px solid var(--paper-line);}
+  .hours-row:last-child{border-bottom:none;}
+  .hours-row.today{background:var(--teal-pale);font-weight:700;}
+  .hours-day{color:var(--ink-soft);}
+  .hours-row.today .hours-day{color:var(--ink);}
+  .hours-closed{color:var(--ink-soft);font-style:italic;}
+
+  .avis-summary{display:flex;align-items:baseline;gap:.9rem;margin-top:1.3rem;flex-wrap:wrap;}
+  .avis-score{font-family:"Frank Ruhl Libre",Georgia,serif;font-weight:700;font-size:2.4rem;color:var(--teal-deep);}
+  .avis-stars{color:var(--copper);font-size:1.15rem;letter-spacing:.12em;}
+  .avis-count{font-size:.9rem;color:var(--ink-soft);}
+  .avis-grid{margin-top:1.8rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;}
+  .avis-item{background:var(--charcoal);color:var(--paper);border-radius:8px;padding:1.5rem;display:flex;flex-direction:column;gap:.8rem;}
+  .avis-item .avis-stars{color:var(--copper);font-size:.95rem;}
+  .avis-item blockquote{font-family:"Frank Ruhl Libre",Georgia,serif;font-style:italic;font-size:1.02rem;line-height:1.5;}
+  .avis-item .avis-who{font-size:.82rem;color:rgba(239,237,228,.62);}
+  .avis-cta{margin-top:1.5rem;padding:1.1rem 1.3rem;border:1px dashed var(--paper-line);border-radius:8px;background:var(--paper-deep);}
+  .avis-cta p{font-size:.88rem;color:var(--ink-soft);}
+  .avis-cta a{font-weight:700;color:var(--teal-deep);text-decoration:underline;}
+
+  .find-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:center;margin-top:2rem;}
+  .find-map{border:1px solid var(--paper-line);border-radius:6px;overflow:hidden;background:var(--paper-deep);}
+  .find-address{font-size:1.1rem;font-weight:700;margin-top:.5rem;}
+  .find-list{margin-top:1.5rem;display:flex;flex-direction:column;gap:.85rem;}
+  .find-list li{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem;color:var(--ink-soft);}
+  .find-list svg{width:1.2rem;height:1.2rem;color:var(--teal-deep);flex:none;margin-top:.1rem;}
+  .find-actions{margin-top:1.6rem;display:flex;gap:.8rem;flex-wrap:wrap;}
+
+  footer{background:var(--charcoal);color:rgba(239,237,228,.75);}
+  .footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:2.4rem;padding-block:clamp(2.5rem,5vw,3.5rem);border-bottom:1px solid var(--charcoal-line);}
+  footer .brand{font-size:1.3rem;color:var(--paper);}
+  footer .foot-tagline{margin-top:.85rem;font-size:.88rem;max-width:28ch;}
+  footer h4{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-pale);margin-bottom:.9rem;}
+  footer .foot-list{display:flex;flex-direction:column;gap:.55rem;font-size:.88rem;}
+  footer .foot-list a:hover{color:var(--paper);}
+  .foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;padding:1.2rem clamp(1.25rem,4vw,2.75rem);font-size:.76rem;color:rgba(239,237,228,.48);max-width:1120px;margin-inline:auto;}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+  @media (max-width:960px){
+    .nav-links{display:none;}
+    .burger{display:block;}
+    .nav-actions .btn-teal{display:none;}
+    .hero-inner{grid-template-columns:1fr;}
+    .info-grid{grid-template-columns:repeat(2,1fr);}
+    .info-item:nth-child(2){border-left:none;}
+    .avis-grid{grid-template-columns:1fr;}
+    .find-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr;gap:2rem;}
+  }
+</style>
+
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">Au <span>Vivier</span></a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a href="#produits">Nos produits</a>
+      <a href="#horaires">Horaires</a>
+      <a href="#avis">Avis</a>
+      <a href="#nous-trouver">Nous trouver</a>
+    </nav>
+    <div class="nav-actions">
+      <span class="status-pill"><span class="dot" id="dotNav"></span><span id="statusNav">Horaires…</span></span>
+      <a class="btn btn-teal" href="tel:+33233100270">02 33 10 02 70</a>
+      <button class="burger" id="burgerBtn" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produits">Nos produits</a>
+  <a href="#horaires">Horaires</a>
+  <a href="#avis">Avis</a>
+  <a href="#nous-trouver">Nous trouver</a>
+  <a class="btn btn-teal" href="tel:+33233100270">Appeler · 02 33 10 02 70</a>
+</div>
+
+<section id="top">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Poissonnerie artisanale — Cherbourg-en-Cotentin, place de Gaulle</p>
+      <h1>L'artisan poissonnier <em>qui fait bouger les étals.</em></h1>
+      <p class="hero-lede">Achat en criée chaque jour, partenariats avec les pêcheurs locaux : Au Vivier propose les produits de la région — moussette, homard du Cotentin, saumon de Cherbourg, moules de la côte — et des plats cuisinés maison, en plein centre-ville.</p>
+      <div class="hero-facts">
+        <span class="fact-chip">4,5★ Google — 228 avis</span>
+        <span class="fact-chip">Criée quotidienne</span>
+        <span class="fact-chip">Plats cuisinés maison</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-teal" href="#horaires">Voir les horaires</a>
+        <a class="btn btn-line" href="tel:+33233100270">Appeler la boutique</a>
+      </div>
+    </div>
+    <div class="block-card">
+      <div class="block-eyebrow">
+        <svg class="block-icon" viewBox="0 0 24 24" fill="none"><path d="M3 12c3-5 15-5 18 0-3 5-15 5-18 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16.5" cy="12" r="1.1" fill="currentColor"/><path d="M21 12s-1.5-3-1.5-3M21 12s-1.5 3-1.5 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Spécialités locales
+      </div>
+      <p class="block-headline">Homard du Cotentin &amp; saumon de Cherbourg</p>
+      <p class="block-sub">Des produits régionaux choisis à la criée, préparés à la demande.</p>
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><p class="label">Aujourd'hui</p><p class="value" id="infoHours">—</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div><p class="label">Adresse</p><p class="value small">23 rue Maréchal Foch, place de Gaulle, 50100 Cherbourg</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24"><path d="M6 3h3l1.5 4L8 8.5a12 12 0 007.5 7.5L17 14l4 1.5v3a2 2 0 01-2.2 2C10.6 20 4 13.4 4 5.2A2 2 0 016 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <div><p class="label">Téléphone</p><p class="value small">02 33 10 02 70</p></div>
+    </div>
+    <div class="info-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 12c3-5 15-5 18 0-3 5-15 5-18 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16.5" cy="12" r="1.1" fill="currentColor"/></svg>
+      <div><p class="label">Spécialité</p><p class="value small">Plateaux de fruits de mer</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="produits">
+  <div class="container">
+    <p class="eyebrow">Nos produits</p>
+    <h2 class="section-title">De la criée à l'étal, chaque matin.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Poissons, coquillages et crustacés frais, écaillage sur place, plateaux de fruits de mer et plats cuisinés maison — pour connaître l'arrivage du jour, un passage à la boutique ou un appel reste le plus sûr.</p>
+    <div class="badge-row">
+      <span class="badge teal">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 12c3-5 15-5 18 0-3 5-15 5-18 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16.5" cy="12" r="1.1" fill="currentColor"/></svg>
+        Poissons &amp; crustacés
+      </span>
+      <span class="badge teal">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12c4-6 12-6 16 0-4 6-12 6-16 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Écailler sur place
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 20l5-5m0 0l9-9 3 3-9 9m-3-3l3 3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        Plats cuisinés maison
+      </span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="horaires">
+  <div class="container">
+    <p class="eyebrow">Horaires</p>
+    <h2 class="section-title">Du mardi au samedi.</h2>
+    <p class="lede" style="margin-top:1.1rem;">Fermé le lundi et le dimanche — le samedi en matinée uniquement.</p>
+    <div class="hours-table" id="hoursTable"></div>
+  </div>
+</section>
+
+<section class="section" id="avis">
+  <div class="container">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Ce que disent les clients, sur Google.</h2>
+    <div class="avis-summary">
+      <span class="avis-score">4,5</span>
+      <span class="avis-stars" aria-hidden="true">★★★★★</span>
+      <span class="avis-count">228 avis Google</span>
+    </div>
+    <div class="avis-grid">
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« Un grand merci au Vivier de Cherbourg pour son accueil, son professionnalisme et la qualité de ses produits. »</blockquote>
+        <p class="avis-who">Anneso5017 DD — Local Guide, avis Google</p>
+      </div>
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« C'est grand, ouvert sur la rue et il n'y a aucune odeur, preuve de la qualité et du souci d'hygiène. Un choix énorme, et même des plats cuisinés variés. »</blockquote>
+        <p class="avis-who">Michèle Lepresle — Local Guide, avis Google</p>
+      </div>
+      <div class="avis-item">
+        <div class="avis-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« Poisson bonne qualité, fraîcheur à conseiller, très bon plateau de fruits de mer. »</blockquote>
+        <p class="avis-who">Avis client — avis PagesJaunes</p>
+      </div>
+    </div>
+    <div class="avis-cta">
+      <p>Une sélection parmi 228 avis, tous vérifiables. <a href="https://www.google.com/maps/search/?api=1&query=Au+Vivier+Poissonnerie+23+rue+Marechal+Foch+50100+Cherbourg" target="_blank" rel="noopener">Voir tous les avis sur Google Maps →</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-deep" id="nous-trouver">
+  <div class="container find-grid">
+    <div>
+      <p class="eyebrow">Nous trouver</p>
+      <h2 class="section-title">Place de Gaulle.</h2>
+      <p class="find-address">23 rue Maréchal Foch, place de Gaulle, 50100 Cherbourg-en-Cotentin</p>
+      <ul class="find-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 12c3-5 15-5 18 0-3 5-15 5-18 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16.5" cy="12" r="1.1" fill="currentColor"/></svg>
+          <span>En plein centre-ville, sur la place piétonne.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Ouvert du mardi au samedi — fermé lundi et dimanche.</span>
+        </li>
+      </ul>
+      <div class="find-actions">
+        <a class="btn btn-charcoal" href="https://www.google.com/maps/search/?api=1&query=Au+Vivier+Poissonnerie+23+rue+Marechal+Foch+50100+Cherbourg" target="_blank" rel="noopener">Itinéraire</a>
+        <a class="btn btn-line" href="tel:+33233100270">Appeler</a>
+      </div>
+    </div>
+    <div class="find-map" aria-hidden="true">
+      <svg viewBox="0 0 320 220" fill="none">
+        <g stroke="var(--ink-soft)" stroke-width="1.4" opacity=".5">
+          <path d="M0 70 H320"/><path d="M0 150 H320"/><path d="M80 0 V220"/><path d="M240 0 V220"/>
+          <path d="M0 40 Q160 20 320 45" stroke-dasharray="3 6"/>
+        </g>
+        <g transform="translate(170,112)">
+          <path d="M0 -46c18 8 30 26 30 46 0 22-14 42-30 50-16-8-30-28-30-50 0-20 12-38 30-46z" fill="var(--teal-pale)" stroke="var(--teal-deep)" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M0 -46V50M-22 -4l22 8 22-8M-26 20l26 8 26-8" stroke="var(--teal-deep)" stroke-width="1.2" fill="none"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="brand" href="#top">Au <span>Vivier</span></a>
+      <p class="foot-tagline">Poissonnerie artisanale, place de Gaulle à Cherbourg-en-Cotentin.</p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <div class="foot-list">
+        <a href="tel:+33233100270">02 33 10 02 70</a>
+        <span>23 rue Maréchal Foch, 50100 Cherbourg-en-Cotentin</span>
+      </div>
+    </div>
+    <div>
+      <h4>Horaires</h4>
+      <div class="foot-list">
+        <span>Mar–Ven&nbsp; 7h45–19h00</span>
+        <span>Sam&nbsp; 7h30–13h00 · Lun, Dim&nbsp; Fermé</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Au Vivier</span>
+    <span>Site vitrine — démonstration</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var schedule = {
+    0:null,
+    1:null,
+    2:{open:['07:45','19:00']},
+    3:{open:['07:45','19:00']},
+    4:{open:['07:45','19:00']},
+    5:{open:['07:45','19:00']},
+    6:{open:['07:30','13:00']}
+  };
+  var dayNames = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+  function toMinutes(hhmm){ var p = hhmm.split(':'); return parseInt(p[0],10)*60 + parseInt(p[1],10); }
+  function fmt(hhmm){ return hhmm.replace(':','h'); }
+
+  function blocksFor(sched){
+    if(!sched) return [];
+    return [sched.open];
+  }
+
+  function getStatus(now){
+    var day = now.getDay();
+    var minutes = now.getHours()*60 + now.getMinutes();
+    var today = schedule[day];
+    var blocks = blocksFor(today);
+    for(var b=0;b<blocks.length;b++){
+      var openMin = toMinutes(blocks[b][0]), closeMin = toMinutes(blocks[b][1]);
+      if(minutes >= openMin && minutes < closeMin){
+        return { open:true, text:'Ouvert — ferme à ' + fmt(blocks[b][1]) };
+      }
+    }
+    for(var b2=0;b2<blocks.length;b2++){
+      var oMin = toMinutes(blocks[b2][0]);
+      if(minutes < oMin){
+        return { open:false, text:'Fermé — ouvre à ' + fmt(blocks[b2][0]) };
+      }
+    }
+    for(var i=1;i<=7;i++){
+      var d = (day+i) % 7;
+      var sched = schedule[d];
+      var nb = blocksFor(sched);
+      if(!nb.length) continue;
+      var label = i===1 ? 'demain' : dayNames[d].toLowerCase();
+      return { open:false, text:'Fermé — ouvre ' + label + ' à ' + fmt(nb[0][0]) };
+    }
+    return { open:false, text:'Fermé' };
+  }
+
+  function renderHours(){
+    var table = document.getElementById('hoursTable');
+    var now = new Date();
+    var todayIdx = now.getDay();
+    var order = [1,2,3,4,5,6,0];
+    var html = '';
+    order.forEach(function(d){
+      var sched = schedule[d];
+      var isToday = d === todayIdx;
+      html += '<div class="hours-row' + (isToday?' today':'') + '"><span class="hours-day">' + dayNames[d] + '</span>';
+      if(sched){
+        var blocks = blocksFor(sched);
+        var text = blocks.map(function(b){ return fmt(b[0]) + ' – ' + fmt(b[1]); }).join(' / ');
+        html += '<span>' + text + '</span></div>';
+      } else {
+        html += '<span class="hours-closed">Fermé</span></div>';
+      }
+    });
+    table.innerHTML = html;
+  }
+
+  function apply(){
+    var now = new Date();
+    var status = getStatus(now);
+    var dotNav = document.getElementById('dotNav');
+    if(dotNav) dotNav.classList.toggle('is-open', status.open);
+    var statusNav = document.getElementById('statusNav');
+    if(statusNav) statusNav.textContent = status.text;
+    var infoHours = document.getElementById('infoHours');
+    if(infoHours) infoHours.textContent = status.text;
+  }
+  apply();
+  renderHours();
+  setInterval(apply, 30000);
+
+  var nav = document.getElementById('siteNav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 12); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  var burger = document.getElementById('burgerBtn');
+  burger.addEventListener('click', function(){
+    var isOpen = document.body.classList.toggle('menu-open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
